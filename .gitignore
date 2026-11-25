@@ -1,0 +1,38 @@
+# dependencies
+node_modules/
+
+# next.js
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+
+# secrets and local config
+.env
+.env.*
+!.env.example
+
+# ProofLoop private data: database, run output, evidence, Kane artifacts
+data/
+.evidence/
+*.sqlite
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
+
+# Kane local profile and artifacts
+.kane/
+.testmuai/
+output-*/
+helper-output-*/
+
+# Raw Phase 0 captures (may contain account details; sanitized copies go in docs/phase0-samples/)
+docs/phase0-raw/
+
+# logs and coverage
+*.log
+coverage/
+
+# OS
+.DS_Store
+Thumbs.db

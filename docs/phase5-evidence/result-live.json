@@ -1,0 +1,114 @@
+{
+  "mode": "live",
+  "startedAt": "2026-11-25T17:50:50.321Z",
+  "checks": [
+    {
+      "name": "server up",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "empty workspace shows the empty state",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "project created through the form",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "test file written through the editor and selected",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "criterion added and shown as Unverified",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "test file exists on disk under the managed folder",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "while running: criterion shows Running, never Verified",
+      "ok": true,
+      "detail": "Running"
+    },
+    {
+      "name": "while running: the panel says nothing is a pass yet",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "while running: Run buttons are disabled (one run at a time)",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "exactly one run was recorded",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "UI run status matches the stored record",
+      "ok": true,
+      "detail": "Passed vs PASSED"
+    },
+    {
+      "name": "UI criterion status matches the server's derived status",
+      "ok": true,
+      "detail": "Verified vs VERIFIED"
+    },
+    {
+      "name": "a PASSED run is the only way the criterion became Verified",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "panel shows the exit code from the record",
+      "ok": true,
+      "detail": "exit 0"
+    },
+    {
+      "name": "raw output was not fetched before it was opened",
+      "ok": true,
+      "detail": "0"
+    },
+    {
+      "name": "raw stdout in the UI equals the API's saved output",
+      "ok": true,
+      "detail": "25540 chars"
+    },
+    {
+      "name": "raw stdout contains Kane's terminal event",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "360px: finished run page has no horizontal scroll",
+      "ok": true,
+      "detail": "{\"sw\":360,\"iw\":360}"
+    },
+    {
+      "name": "run history lists the run",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "no uncaught page exceptions or console errors",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "errors": [],
+  "notes": [
+    "Run finished about 215s after the click. Panel status: Passed. Criterion status: Verified.",
+    "Stored run: status=PASSED, exit=0, duration=213982ms, errorCode=null, evidenceAvailable=true.",
+    "Evidence section text: AVAILABLE\nKane evidence pack\nSaved in ProofLoop's data folder: 28ff288b-a614-43a6-ab68-bb265a0ac0aa/54dfa727-de4a-42b0-a543-32ac7a470918.evidence"
+  ],
+  "finishedAt": "2026-11-25T17:54:46.293Z",
+  "failed": 0
+}

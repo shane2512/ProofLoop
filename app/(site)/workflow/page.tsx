@@ -73,8 +73,8 @@ const PHASES: Array<{ code: string; name: string; text: string; state: "done" | 
   { code: "P/02", name: "Data layer", text: "SQLite, migrations, immutable run snapshots, CRUD API.", state: "done" },
   { code: "P/03", name: "Kane adapter", text: "No-shell spawn, capped capture, parser, evidence discovery, redaction.", state: "done" },
   { code: "P/04", name: "Verification engine", text: "Run lifecycle, freshness-aware VERIFIED rule, run API.", state: "done" },
-  { code: "P/05", name: "Dashboard", text: "Project, criterion and run screens inside the workspace.", state: "next" },
-  { code: "P/06", name: "Agent handoff", text: "Factual report, redaction, copy and download.", state: "later" },
+  { code: "P/05", name: "Dashboard", text: "Project, criterion and run screens inside the workspace.", state: "done" },
+  { code: "P/06", name: "Agent handoff", text: "Factual report, redaction, copy and download.", state: "next" },
   { code: "P/07", name: "History and exports", text: "Run timeline, before and after compare, JSON and Markdown.", state: "later" },
 ];
 

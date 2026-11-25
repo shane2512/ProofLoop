@@ -12,9 +12,10 @@ export default defineConfig({
     },
   },
   test: {
-    include: ["tests/**/*.test.ts"],
+    include: ["tests/**/*.test.{ts,tsx}"],
     // Live Kane tests cost credits and upload to the account. They run only via `npm run test:live-kane`.
     exclude: ["tests/live/**", "node_modules/**"],
     environment: "node",
+    // Component tests opt in per file with // @vitest-environment jsdom and load tests/setup-dom.ts themselves.
   },
 });

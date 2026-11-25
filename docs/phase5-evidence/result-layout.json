@@ -1,0 +1,87 @@
+{
+  "mode": "layout",
+  "startedAt": "2026-11-25T17:49:47.441Z",
+  "checks": [
+    {
+      "name": "server up",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "360px: no horizontal scroll on workspace",
+      "ok": true,
+      "detail": "{\"sw\":360,\"bw\":360,\"iw\":360}"
+    },
+    {
+      "name": "360px: no horizontal scroll on project",
+      "ok": true,
+      "detail": "{\"sw\":360,\"bw\":360,\"iw\":360}"
+    },
+    {
+      "name": "360px: buttons are at least 44px tall",
+      "ok": true,
+      "detail": "{\"n\":12,\"minH\":44}"
+    },
+    {
+      "name": "360px: add-criterion dialog fits the viewport",
+      "ok": true,
+      "detail": "{\"l\":16,\"r\":344,\"t\":12,\"b\":788,\"w\":360,\"h\":800,\"sw\":360,\"fs\":\"16px\"}"
+    },
+    {
+      "name": "360px: form fields use 16px text (no iOS zoom)",
+      "ok": true,
+      "detail": "16px"
+    },
+    {
+      "name": "360px: run confirmation fits and states real Kane/credits",
+      "ok": true,
+      "detail": "{\"l\":16,\"r\":344,\"w\":360}"
+    },
+    {
+      "name": "cancelling the confirmation started no run",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "keyboard: Enter on a focused button opens the dialog",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "keyboard: focus moved into the dialog",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "keyboard: Tab never focuses the page behind the open dialog",
+      "ok": true,
+      "detail": "dialog:button > browser-ui > dialog:button > dialog:button > dialog:button > dialog:button > browser-ui > dialog:button > dialog:button > browser-ui"
+    },
+    {
+      "name": "keyboard: Escape closes the dialog",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "keyboard: focus returns to the button that opened it",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "keyboard: Escape started no run",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "no uncaught page exceptions or console errors",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "errors": [],
+  "notes": [
+    "Tab trail: dialog:button > browser-ui > dialog:button > dialog:button > dialog:button > dialog:button > browser-ui > dialog:button > dialog:button > browser-ui"
+  ],
+  "finishedAt": "2026-11-25T17:50:02.368Z",
+  "failed": 0
+}

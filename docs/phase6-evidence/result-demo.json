@@ -1,6 +1,6 @@
 {
   "mode": "demo",
-  "startedAt": "2026-11-25T18:37:56.874Z",
+  "startedAt": "2026-11-25T18:45:28.333Z",
   "checks": [
     {
       "name": "server up",
@@ -158,6 +158,6 @@
     "1280: copy outcome=copied; clipboard read ok=true",
     "360: copy outcome=copied; clipboard read ok=true"
   ],
-  "finishedAt": "2026-11-25T18:38:11.277Z",
+  "finishedAt": "2026-11-25T18:45:43.371Z",
   "failed": 0
 }

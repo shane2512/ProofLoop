@@ -253,6 +253,10 @@ Verify the page shows the "Products" heading and at least one product with an "A
   } else if (mode === "demo") {
     // ---- Demo data: handoff report, clipboard, downloads, evidence, compare ----
     const state = JSON.parse(fs.readFileSync(path.join(dataDir, "state.json"), "utf8"));
+    // What must never appear in a report: this user's name, ProofLoop's data folder, or a Test Manager id in a link.
+    const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const leakRe = new RegExp([esc(os.userInfo().username), esc(dataDir), esc(dataDir.replace(/\\/g, "\\\\")), "test-manager\\.[\\w.-]+/projects/(?!<ID>)\\w+"].join("|"), "i");
+    const leaks = (text) => leakRe.test(text);
     await send("Browser.grantPermissions", { origin: base, permissions: ["clipboardReadWrite", "clipboardSanitizedWrite"] });
     for (const [label, w, h, mobile] of [["1280", 1280, 1000, false], ["360", 360, 800, true]]) {
       await viewport(w, h, mobile);
@@ -268,7 +272,7 @@ Verify the page shows the "Products" heading and at least one product with an "A
       await waitFor(`document.querySelector('textarea[aria-label="Report text"]')?.value.length > 200`, "report loaded");
       const report = await js(`document.querySelector('textarea[aria-label="Report text"]').value`);
       check(`${label}: report shows the failure, Kane's diagnosis and the criterion`, report.includes("**FAILED**") && report.includes("Login navigated to /products") && report.includes("Expected behavior: After signing in") && report.includes("Not recorded"));
-      check(`${label}: report has no username, data folder or account id`, !/shane|data\\\\demo-loop|01M89/i.test(report));
+      check(`${label}: report has no username, data folder or account id`, !leaks(report));
       check(`${label}: panel labels Kane's diagnosis as Kane's`, await js(`document.querySelector('.ws-run').innerText.includes("Kane's diagnosis (not ProofLoop's)")`));
 
       // Copy goes to the real clipboard, only when asked.
@@ -299,7 +303,7 @@ Verify the page shows the "Products" heading and at least one product with an "A
       check(`${label}: JSON download is schemaVersion 1 with no raw output`, parsed.schemaVersion === 1 && parsed.output.included === false && !jsonText.includes('"stdout"'));
       const rawText = await js(`fetch(document.querySelector('a[href*="includeOutput=true"]').getAttribute('href')).then(r => r.text())`);
       const rawParsed = JSON.parse(rawText);
-      check(`${label}: raw output is only in the explicit export`, rawParsed.output.included === true && rawParsed.output.stdout.includes("test_md_done") && !/shane|01M89/i.test(rawText));
+      check(`${label}: raw output is only in the explicit export`, rawParsed.output.included === true && rawParsed.output.stdout.includes("test_md_done") && !leaks(rawText));
 
       // Evidence file download.
       const ev = await js(`(async () => { const a = document.querySelector('a[href*="/evidence/"]'); if (!a) return null; const r = await fetch(a.getAttribute('href')); const b = new Uint8Array(await r.arrayBuffer()); return { status: r.status, type: r.headers.get('content-type'), disp: r.headers.get('content-disposition'), head: [...b.slice(0, 2)], size: b.length }; })()`);

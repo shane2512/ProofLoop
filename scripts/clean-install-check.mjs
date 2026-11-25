@@ -18,7 +18,9 @@ function step(name, cmd, args, cwd, timeout = 900_000) {
   const t0 = Date.now();
   const r = spawnSync(cmd, args, { cwd, encoding: "utf8", shell: false, timeout, maxBuffer: 64 * 1024 * 1024 });
   const out = `${r.stdout ?? ""}${r.stderr ?? ""}`;
-  const entry = { name, command: [cmd, ...args].join(" "), exitCode: r.status, seconds: Math.round((Date.now() - t0) / 1000), tail: out.trim().split(/\r?\n/).slice(-6) };
+  // Paths in the saved result are replaced so the file can be published without local folder names.
+  const shown = [cmd, ...args].join(" ").split(app).join("<repo>").split(work).join("<temp folder>");
+  const entry = { name, command: shown, exitCode: r.status, seconds: Math.round((Date.now() - t0) / 1000), tail: out.trim().split(/\r?\n/).slice(-6) };
   steps.push(entry);
   console.log(`${r.status === 0 ? "PASS" : "FAIL"} ${name} (${entry.seconds}s)`);
   return r.status === 0;

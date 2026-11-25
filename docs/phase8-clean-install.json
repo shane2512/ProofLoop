@@ -1,0 +1,79 @@
+{
+  "at": "2026-11-25T18:44:03.710Z",
+  "commit": "4e3dd41",
+  "node": "v26.12.1",
+  "ok": true,
+  "steps": [
+    {
+      "name": "clone committed files",
+      "command": "git clone --quiet <repo> <temp folder>\\proofloop",
+      "exitCode": 0,
+      "seconds": 1,
+      "tail": [
+        ""
+      ]
+    },
+    {
+      "name": "npm ci",
+      "command": "cmd /c npm ci",
+      "exitCode": 0,
+      "seconds": 47,
+      "tail": [
+        "added 196 packages, and audited 197 packages in 46s",
+        "",
+        "53 packages are looking for funding",
+        "  run `npm fund` for details",
+        "",
+        "found 0 vulnerabilities"
+      ]
+    },
+    {
+      "name": "lint",
+      "command": "cmd /c npm run lint",
+      "exitCode": 0,
+      "seconds": 8,
+      "tail": [
+        "> proofloop@0.1.0 lint",
+        "> eslint ."
+      ]
+    },
+    {
+      "name": "typecheck",
+      "command": "cmd /c npm run typecheck",
+      "exitCode": 0,
+      "seconds": 9,
+      "tail": [
+        "> proofloop@0.1.0 typecheck",
+        "> tsc --noEmit"
+      ]
+    },
+    {
+      "name": "tests (no Kane, no credits)",
+      "command": "cmd /c npm test",
+      "exitCode": 0,
+      "seconds": 20,
+      "tail": [
+        "      Tests  313 passed | 1 skipped (314)",
+        "   Start at  00:13:21",
+        "   Duration  18.86s (tests 65%, environment 18%, import 9%, transform 7%, worker 1%)",
+        "",
+        "    Isolate  22 workers spawned · ~1.07s startup each (spawn + environment, per file)",
+        "             at least ~1.07s faster with isolate: false — reuses workers across files instead of one per file"
+      ]
+    },
+    {
+      "name": "production build",
+      "command": "cmd /c npm run build",
+      "exitCode": 0,
+      "seconds": 23,
+      "tail": [
+        "",
+        "",
+        "ƒ Proxy (Middleware)",
+        "",
+        "○  (Static)   prerendered as static content",
+        "ƒ  (Dynamic)  server-rendered on demand"
+      ]
+    }
+  ]
+}

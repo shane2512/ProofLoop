@@ -37,7 +37,18 @@ Test labels: every file under `tests/` states whether it is a ProofLoop applicat
 
 ## Clean install
 
-CLEAN_INSTALL_PLACEHOLDER
+`node scripts/clean-install-check.mjs` cloned the committed repository (commit `4e3dd41`, which contains phases 0 to 9 apart from the report text and this result file) into a temporary folder and ran, on Node v26.12.1:
+
+| Step | Result | Time |
+|---|---|---|
+| `git clone` (committed files only) | passed | 1 s |
+| `npm ci` | passed, 196 packages, 0 vulnerabilities | 47 s |
+| `npm run lint` | passed | 8 s |
+| `npm run typecheck` | passed | 9 s |
+| `npm test` | passed, 313 tests, 1 skipped, no Kane, no credits | 20 s |
+| `npm run build` | passed | 23 s |
+
+The result is `docs/phase8-clean-install.json` (local folder names replaced by `<repo>` and `<temp folder>`). It proves the committed files are enough to install and pass. It did not start Kane, and it does not prove a fresh machine has `kane-cli` and Chrome; the README lists those prerequisites and the app reports a missing Kane as `PREREQUISITE_FAILED`.
 
 ## Gaps
 

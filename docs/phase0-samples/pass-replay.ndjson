@@ -1,0 +1,9 @@
+{"type":"stream_start","cli_version":"0.10.9","surface":"testmd","pid":27796,"v":1,"ts":"2026-11-25T13:52:28.173Z"}
+{"type":"test_md_step_start","step_index":1,"heading":"Open the login page","ref":null,"v":1,"ts":"2026-11-25T13:52:48.342Z"}
+{"type":"step_event","index":0,"event":"replay_started","detail":"replaying 3 actions","recording_length":3,"v":1,"ts":"2026-11-25T13:52:49.985Z"}
+{"type":"run_end","run_id":"run-0","status":"passed","summary":"","reason":"replay completed","duration":5.83,"final_url":"https://www.saucedemo.com/","actions_executed":3,"screenshot_path":"<HOME>\\.testmuai\\kaneai\\sessions\\6ec7110a-1284-4204-8ecc-9265bda45d3c\\scratch\\0\\replay-test\\screenshots/step_003.png","total_runs":1,"context":"<abridged>","result_code":100,"reason_code":"success.complete","v":1,"ts":"2026-11-25T13:52:54.265Z"}
+{"type":"test_md_step_end","step_index":1,"status":"passed","duration_s":5.83,"ref_kind":null,"unit_kind":null,"inlined_count":null,"failed_sub_step_index":null,"v":1,"ts":"2026-11-25T13:52:54.269Z"}
+{"type":"test_md_step_end","step_index":2,"status":"passed","duration_s":25.81,"ref_kind":null,"unit_kind":null,"inlined_count":null,"failed_sub_step_index":null,"v":1,"ts":"2026-11-25T13:53:20.898Z"}
+{"type":"test_md_evidence_ingest","status":"ok","evidence_id":"2529eebd-e88f-4a42-8a27-2d62002d742c","v":1,"ts":"2026-11-25T13:53:28.238Z"}
+{"type":"test_md_summary","overall_status":"passed","duration_s":51,"steps":{"total":2,"passed":2,"failed":0,"skipped":0,"replay_decisions":2,"author_decisions":0},"adaptive_heal":{"triggered":false},"commit":{"committed":false,"reason":"readonly_fallback"},"artifacts":{"replaced":false},"upload":{"performed":true,"succeeded":true},"cancelled":false,"v":1,"ts":"2026-11-25T13:53:28.243Z"}
+{"type":"test_md_done","overall_status":"passed","duration_s":51,"session_id":"6ec7110a-1284-4204-8ecc-9265bda45d3c","coverage":{"status":"skipped"},"v":1,"ts":"2026-11-25T13:53:28.254Z"}

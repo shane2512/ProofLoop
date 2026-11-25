@@ -97,3 +97,11 @@ The owner approved these updates. `requirements.md` (FR-008, FR-011, KANE-004/00
 ## Go/no-go
 
 **GO.** The documented command is reproducible, the pass and fail outcomes are distinguishable, evidence packs are discoverable and valid, and the spawn path works without a shell. The "evidence cannot be found" gate in `phases.md` does not apply, so manual evidence import is not required. The owner approved the documentation updates and accepted that live runs create test cases in the owner's Test Manager account.
+
+## Addendum from Phase 3 (live runs through the ProofLoop adapter)
+
+Two further live failing runs, driven by `src/server/kane/runner.ts` in an isolated working directory, changed three conclusions above.
+
+1. **Evidence isolation works.** With the child's `cwd` set to a temporary directory, Kane wrote `.testmuai/evidence/<id>.evidence` under that directory and not under the repository. Setting `cwd` per run is therefore a valid way to isolate packs.
+2. **`test_md_evidence_ingest` is not always emitted.** In one failing run the stream ended `test_md_summary`, `coverage`, `test_md_done` with no ingest event, yet the pack was written and its id appeared on stderr in `evidence: view locally with kane-cli evidence serve <path>\<id>.evidence`. Fact 8 above ("the id ties a run to its pack") is only true when the event is present. The adapter now tries, in order: the event id, the stderr hint id, then the single pack in a per-run directory. Each candidate is verified on disk. Several packs in one directory are treated as ambiguous and none is chosen. This is sound only if every run gets its own working directory.
+3. **Kane's failure code is not deterministic.** The same failing test reported `assertion_error.final_verification` (result 710) in one run and `assertion_error.step_not_achievable` (result 750) in another, with a different `reason` text and, in the second run, no failed `assertion` event. Reports must quote Kane's reason as observed and must not rely on one specific code. The FAILED verdict itself was stable: exit 1 and `test_md_done.overall_status: failed` both times.

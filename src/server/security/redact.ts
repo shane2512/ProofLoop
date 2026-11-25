@@ -39,11 +39,19 @@ export function createRedactor(options: RedactorOptions = {}): Redactor {
   const shareRe = /(\/share\/)[A-Za-z0-9_-]{16,}/g;
   const bearerRe = /(Bearer\s+)[A-Za-z0-9._~+/-]{8,}=*/gi;
   const flagRe = /(--(?:access-key|password|token)(?:=|\s+))\S+/gi;
+  // Account identifiers in Test Manager links and summaries. They are not credentials, but they tie text to one account.
+  const managerUrlRe = /(test-manager\.[A-Za-z0-9.-]+\/projects\/)[A-Za-z0-9_-]+(\/test-cases\/)[A-Za-z0-9_-]+/g;
+  const testcaseRe = /(testcase_id\\*"\s*:\s*\\*")[A-Za-z0-9_-]+/g;
 
   return (text: string): string => {
     let out = text;
     for (const re of secretRes) out = out.replace(re, REDACTED);
     if (homeRe) out = out.replace(homeRe, "<HOME>");
-    return out.replace(shareRe, "$1<REDACTED>").replace(bearerRe, `$1${REDACTED}`).replace(flagRe, `$1${REDACTED}`);
+    return out
+      .replace(shareRe, "$1<REDACTED>")
+      .replace(bearerRe, `$1${REDACTED}`)
+      .replace(flagRe, `$1${REDACTED}`)
+      .replace(managerUrlRe, "$1<ID>$2<ID>")
+      .replace(testcaseRe, "$1<ID>");
   };
 }

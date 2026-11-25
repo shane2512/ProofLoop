@@ -190,9 +190,41 @@ export interface CriterionInput {
   stepLabel?: string | null;
 }
 
+export interface RunFacts {
+  id: string;
+  status: string;
+  exitCode: number | null;
+  timedOut: boolean;
+  canceled: boolean;
+  errorCode: string | null;
+  summary: string | null;
+  createdAt: string;
+  startedAt: string | null;
+  finishedAt: string | null;
+  durationMs: number | null;
+  kaneFinalStatus: string | null;
+  stepsPassed: number | null;
+  stepsFailed: number | null;
+  expectedBehavior: string;
+  testFile: string;
+  evidence: Array<Pick<EvidenceRef, "id" | "label" | "available" | "relativePath" | "unavailableReason">>;
+}
+
+export interface RunComparison {
+  a: RunFacts;
+  b: RunFacts;
+  differences: Array<{ field: keyof RunFacts; a: unknown; b: unknown }>;
+  note: string;
+}
+
 export interface ApiErrorBody {
   error: { code: string; message: string; details?: Record<string, unknown> };
 }
+
+/** Download URLs. Plain links: the browser saves the file, nothing is sent anywhere. */
+export const reportUrl = (runId: string, format: "markdown" | "json", includeOutput = false) =>
+  `/api/v1/runs/${encodeURIComponent(runId)}/report?format=${format}${includeOutput ? "&includeOutput=true" : ""}`;
+export const evidenceUrl = (runId: string, evidenceId: string) => `/api/v1/runs/${encodeURIComponent(runId)}/evidence/${encodeURIComponent(evidenceId)}`;
 
 /** The number of criteria at which a project is ready to judge (requirements section 5). */
 export const MIN_READY_CRITERIA = 3;

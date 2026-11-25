@@ -4,6 +4,7 @@ import type {
   CriterionInput,
   Project,
   ProjectInput,
+  RunComparison,
   RunDetail,
   RunPage,
   TestFileContent,
@@ -107,6 +108,13 @@ export const api = {
     const res = await send(`/runs/${seg(runId)}/output?stream=${stream}`, { signal });
     return res.text();
   },
+
+  /** The Markdown handoff report for a finished run. Rejects with CONFLICT while the run is active. */
+  async getReportMarkdown(runId: string, signal?: AbortSignal): Promise<string> {
+    const res = await send(`/runs/${seg(runId)}/report?format=markdown`, { signal });
+    return res.text();
+  },
+  compareRuns: (a: string, b: string, signal?: AbortSignal) => request<RunComparison>("GET", `/runs/compare?a=${seg(a)}&b=${seg(b)}`, undefined, signal),
 
   listTestFiles: (projectId: string, signal?: AbortSignal) =>
     request<{ files: TestFileEntry[] }>("GET", `/projects/${seg(projectId)}/test-files`, undefined, signal).then((r) => r.files),

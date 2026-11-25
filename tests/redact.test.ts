@@ -34,3 +34,20 @@ describe("createRedactor", () => {
     expect(m("x a.b*c+(d) y aXbbc+(d)")).toBe("x [REDACTED] y aXbbc+(d)");
   });
 });
+
+describe("createRedactor: Test Manager account identifiers", () => {
+  const r = createRedactor({ homeDirs: [] });
+  it("hides project and test-case ids in links, and the test case id in summaries", () => {
+    const line = '{"share_url":"https://test-manager.lambdatest.com/projects/01M89DAAAQCYB8FCWAQC6X3355/test-cases/01M89Z4KZV40G2XW0KQ5CG3YMA/dashboard/share/abcdefghijklmnop1234?type=summary","commit":{"testcase_id":"01M89Z4KZV40G2XW0KQ5CG3YMA"}}';
+    const out = r(line);
+    expect(out).not.toContain("01M89");
+    expect(out).toContain("test-manager.lambdatest.com/projects/<ID>/test-cases/<ID>/dashboard/share/<REDACTED>");
+    expect(out).toContain('"testcase_id":"<ID>"');
+  });
+  it("also works when the JSON is escaped inside a string", () => {
+    expect(r('x \\"testcase_id\\":\\"01M89Z4KZV\\" y')).not.toContain("01M89Z4KZV");
+  });
+  it("leaves ordinary text alone", () => {
+    expect(r("projects/foo and test-cases/bar")).toBe("projects/foo and test-cases/bar");
+  });
+});

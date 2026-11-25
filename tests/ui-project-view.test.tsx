@@ -47,7 +47,7 @@ describe("ProjectView", () => {
         criterion({ id: "b", title: "B", status: "FAILED" }),
         criterion({ id: "c", title: "C", status: "UNVERIFIED" }),
       ]);
-      await screen.findByText("A");
+      await screen.findByRole("heading", { name: "A" });
       const labels = Array.from(document.querySelectorAll(".ws-badge")).map((n) => n.textContent);
       expect(labels).toEqual(["Verified", "Failed", "Unverified"]);
       expect(screen.getByTestId("readiness").textContent).toContain("1 of 3 verified by a real Kane run");
@@ -74,7 +74,7 @@ describe("ProjectView", () => {
 
     it("disables Add criterion at the five-criterion limit and says why", async () => {
       setup([1, 2, 3, 4, 5].map((n) => criterion({ id: `c${n}`, title: `Criterion ${n}` })));
-      await screen.findByText("Criterion 1");
+      await screen.findByRole("heading", { name: "Criterion 1" });
       expect((screen.getByRole("button", { name: "Add criterion" }) as HTMLButtonElement).disabled).toBe(true);
       expect(screen.getByTestId("readiness").textContent).toContain("at most five criteria");
     });
@@ -398,7 +398,7 @@ describe("ProjectView", () => {
 
     it("labels every control so a screen reader can tell the criteria apart", async () => {
       setup([criterion({ id: "a", title: "First" }), criterion({ id: "b", title: "Second" })]);
-      await screen.findByText("First");
+      await screen.findByRole("heading", { name: "First" });
       for (const verb of ["Run with Kane", "Edit", "Delete"]) {
         expect(screen.getByRole("button", { name: `${verb}: First` })).toBeTruthy();
         expect(screen.getByRole("button", { name: `${verb}: Second` })).toBeTruthy();

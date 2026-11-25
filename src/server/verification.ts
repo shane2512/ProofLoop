@@ -1,5 +1,6 @@
 import "server-only";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import type { EvidenceRef, Run, RunStatus } from "./domain/types";
 import { requireId } from "./domain/validation";
@@ -8,6 +9,10 @@ import { buildKaneRunCommand, resolveKaneLaunch, type KaneLaunch } from "./kane/
 import { discoverRunEvidence, importEvidencePack } from "./kane/evidence";
 import { startKaneProcess, type RunHandle, type RunOptions, type RunResult } from "./kane/runner";
 import { hashManagedTestFile, readManagedTestFile } from "./kane/testfile";
+import { buildAgentReportMarkdown } from "./reports/agent-feedback";
+import { reportFileName, scrubDataDir } from "./reports/common";
+import { resolveEvidenceFile, verifyEvidence } from "./reports/evidence-check";
+import { buildJsonReport, compareRuns as compareRunFacts, runFacts } from "./reports/export";
 import { createRedactor, type Redactor } from "./security/redact";
 import { transaction, type Db } from "./storage/db";
 import type { CriterionRepository } from "./storage/criteria";
@@ -85,6 +90,8 @@ interface ActiveRun {
   handle: RunHandle | null;
   cancelRequested: boolean;
 }
+
+const isActive = (s: RunStatus) => s === "QUEUED" || s === "RUNNING";
 
 const busy = () => new AppError("RUNNER_BUSY", "A verification run is already in progress. Only one run can be active at a time.", 409);
 
@@ -227,11 +234,10 @@ export class VerificationService {
   getRunDetail(runIdRaw: string): RunDetailDto {
     const runId = requireId(runIdRaw, "Run");
     const run = this.d.runs.mustGet(runId);
-    const evidence = this.d.evidence.listForRun(runId);
-    return {
-      run: this.toSummary(run, evidence.some((e) => e.available)),
-      events: this.d.runs.listEvents(runId).map((e) => ({ sequence: e.sequence, eventType: e.eventType, rawLine: e.rawLine, createdAt: e.createdAt })),
-      evidence: evidence.map((e) => ({
+    // Evidence is re-checked against the disk on every read, so nothing links to a file that has gone.
+    const evidence = verifyEvidence(
+      this.d.dirs.evidenceDir,
+      this.d.evidence.listForRun(runId).map((e) => ({
         id: e.id,
         kind: e.kind,
         label: e.label,
@@ -240,9 +246,83 @@ export class VerificationService {
         relativePath: e.relativePath,
         unavailableReason: e.unavailableReason,
       })),
+    );
+    return {
+      run: this.toSummary(run, evidence.some((e) => e.available)),
+      events: this.d.runs.listEvents(runId).map((e) => ({ sequence: e.sequence, eventType: e.eventType, rawLine: e.rawLine, createdAt: e.createdAt })),
+      evidence,
       kane: run.kaneResult,
       command: run.commandRedacted,
     };
+  }
+
+  /** INT-015. Evidence references for a run, each re-verified against the disk now. */
+  listEvidence(runIdRaw: string): EvidenceRefDto[] {
+    return this.getRunDetail(runIdRaw).evidence;
+  }
+
+  /**
+   * INT-015 download: the absolute path of an evidence file for the local download route, only if the
+   * reference belongs to this run and the file is still a regular file inside the evidence folder.
+   */
+  resolveEvidenceDownload(runIdRaw: string, evidenceIdRaw: string): { absolutePath: string; fileName: string } {
+    const runId = requireId(runIdRaw, "Run");
+    const evidenceId = requireId(evidenceIdRaw, "Evidence");
+    this.d.runs.mustGet(runId);
+    const ref = this.d.evidence.listForRun(runId).find((e) => e.id === evidenceId);
+    const gone = () => new AppError("NOT_FOUND", "That evidence file is not available.", 404);
+    if (!ref || !ref.available || !ref.relativePath) throw gone();
+    const abs = resolveEvidenceFile(this.d.dirs.evidenceDir, ref.relativePath);
+    if (!abs) throw gone();
+    return { absolutePath: abs, fileName: path.basename(abs) };
+  }
+
+  /**
+   * INT-013. A report for one finished run, built only from its stored record. Raw output goes into the
+   * JSON export only when `includeOutput` is set, which the caller must do explicitly (FR-019).
+   */
+  buildReport(runIdRaw: string, format: "markdown" | "json", includeOutput = false): { body: string; contentType: string; fileName: string } {
+    const detail = this.getRunDetail(runIdRaw);
+    if (isActive(detail.run.status)) {
+      throw new AppError("CONFLICT", "The run is still in progress. A report needs a finished run.", 409);
+    }
+    const saved = (stream: "stdout" | "stderr"): string | null => {
+      try {
+        return this.readRawOutput(detail.run.id, stream);
+      } catch (err) {
+        if (err instanceof AppError && err.code === "OUTPUT_UNAVAILABLE") return null;
+        throw err;
+      }
+    };
+    const input = {
+      run: detail.run,
+      kane: detail.kane,
+      evidence: detail.evidence,
+      command: detail.command,
+      stdout: saved("stdout"),
+      stderr: saved("stderr"),
+    };
+    // The text was redacted when saved. It is redacted again here so a report can never be less safe than the record.
+    const clean = (text: string) => scrubDataDir(this.redact(text), this.d.dirs.dataDir, os.homedir());
+    if (format === "markdown") {
+      return { body: clean(buildAgentReportMarkdown(input)), contentType: "text/markdown; charset=utf-8", fileName: reportFileName(detail.run.id, "md") };
+    }
+    const json = buildJsonReport(input, detail.events, includeOutput);
+    return { body: clean(`${JSON.stringify(json, null, 2)}\n`), contentType: "application/json; charset=utf-8", fileName: reportFileName(detail.run.id, "json") };
+  }
+
+  /** FR-020. Two runs of the same criterion, side by side, with no inferred cause. */
+  compareRuns(aRaw: string, bRaw: string) {
+    const a = this.getRunDetail(aRaw);
+    const b = this.getRunDetail(bRaw);
+    if (a.run.id === b.run.id) throw new AppError("VALIDATION_ERROR", "Choose two different runs to compare.", 400, { field: "b" });
+    if (a.run.criterionId !== b.run.criterionId) {
+      throw new AppError("VALIDATION_ERROR", "Only runs of the same criterion can be compared.", 400, { field: "b" });
+    }
+    for (const d of [a, b]) {
+      if (isActive(d.run.status)) throw new AppError("CONFLICT", "A run that is still in progress cannot be compared yet.", 409);
+    }
+    return compareRunFacts(runFacts(a.run, a.kane, a.evidence), runFacts(b.run, b.kane, b.evidence));
   }
 
   listRuns(projectIdRaw: string, opts: { criterionId?: string | null; limit?: number | null; cursor?: string | null }): { runs: RunSummaryDto[]; nextCursor: string | null } {

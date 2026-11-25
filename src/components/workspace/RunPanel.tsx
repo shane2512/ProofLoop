@@ -2,10 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { api, describeApiError } from "@/lib/api-client";
-import { isActiveRun, type KaneSnapshot, type RunDetail } from "@/lib/api-types";
+import { evidenceUrl, isActiveRun, type KaneSnapshot, type RunDetail } from "@/lib/api-types";
 import { describeErrorCode, formatDuration, formatTime, RUN_STATUS } from "@/lib/status";
 import { ErrorNotice } from "./ErrorNotice";
+import { CompareSection } from "./CompareSection";
 import { CommandDisclosure, EventsDisclosure, OutputDisclosure } from "./RawOutput";
+import { ReportSection } from "./ReportSection";
 import { StatusBadge } from "./StatusBadge";
 import { useRunDetail } from "./useRunDetail";
 
@@ -140,6 +142,9 @@ export function RunPanel({ runId, startedHere = false, onSettled, onClose }: Pro
           <h3 className="ws-h3">Evidence</h3>
           <EvidenceSection detail={detail} active={active} />
 
+          {!active ? <ReportSection runId={run.id} /> : null}
+          {!active ? <CompareSection run={run} /> : null}
+
           <h3 className="ws-h3">Raw record</h3>
           <OutputDisclosure runId={run.id} stream="stdout" truncated={run.stdoutTruncated} finished={!active} />
           <OutputDisclosure runId={run.id} stream="stderr" truncated={run.stderrTruncated} finished={!active} />
@@ -152,6 +157,7 @@ export function RunPanel({ runId, startedHere = false, onSettled, onClose }: Pro
 }
 
 function EvidenceSection({ detail, active }: { detail: RunDetail; active: boolean }) {
+  const runId = detail.run.id;
   if (active) return <p className="ws-note">Evidence is looked for after the run finishes.</p>;
   if (detail.evidence.length === 0) {
     return <p className="ws-note">No evidence was recorded for this run. ProofLoop only lists files it confirmed exist.</p>;
@@ -163,6 +169,11 @@ function EvidenceSection({ detail, active }: { detail: RunDetail; active: boolea
           <span className="ws-evidence-state">{e.available ? "Available" : "Unavailable"}</span>
           <span className="ws-evidence-label">{e.label}</span>
           {e.available && e.relativePath ? <span className="ws-evidence-path">Saved in ProofLoop&apos;s data folder: {e.relativePath}</span> : null}
+          {e.available ? (
+            <a className="ws-link-btn" href={evidenceUrl(runId, e.id)} download aria-label={`Download ${e.label}`}>
+              Download this file
+            </a>
+          ) : null}
           {!e.available && e.unavailableReason ? <span className="ws-evidence-path">{e.unavailableReason}</span> : null}
         </li>
       ))}

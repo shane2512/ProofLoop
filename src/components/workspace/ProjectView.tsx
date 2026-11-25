@@ -198,7 +198,7 @@ export function ProjectView({ projectId }: { projectId: string }) {
         />
       ) : null}
 
-      <RunHistory projectId={projectId} refreshKey={historyKey} selectedRunId={watch?.runId ?? null} onSelect={(r) => setWatch({ runId: r.id, startedHere: false })} />
+      <RunHistory projectId={projectId} refreshKey={historyKey} selectedRunId={watch?.runId ?? null} criteria={criteria} onSelect={(r) => setWatch({ runId: r.id, startedHere: false })} />
 
       <Dialog open={modal.kind === "project"} onClose={closeModal} title="Edit project">
         <ProjectForm

@@ -2580,3 +2580,130 @@ html.has-motion:not(.motion-ready) [data-intro] {
     transition: none;
   }
 }
+
+/* ----- report, compare, filter (Phases 6 and 7) ----- */
+
+.ws-report {
+  width: 100%;
+  max-width: 100%;
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #070708;
+  color: #d4d4d8;
+  font: inherit;
+  font-size: 11px;
+  line-height: 1.55;
+  resize: vertical;
+}
+
+.ws-actions a.ws-btn {
+  text-decoration: none;
+}
+
+.ws-compare {
+  margin-top: 10px;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.ws-compare table {
+  width: 100%;
+  min-width: 460px;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.ws-compare th,
+.ws-compare td {
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--line-dark);
+  overflow-wrap: anywhere;
+}
+
+.ws-compare thead th {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.ws-compare tbody th {
+  font-weight: 600;
+  color: var(--muted-dark);
+  width: 30%;
+}
+
+.ws-compare tr[data-changed="true"] td {
+  color: var(--white);
+  background: rgba(255, 79, 23, 0.07);
+}
+
+.ws-filter {
+  margin-top: 12px;
+  max-width: 360px;
+}
+
+.ws-evidence a.ws-link-btn {
+  justify-self: start;
+  margin-top: 4px;
+  font-size: 11px;
+}
+
+/* On a phone the comparison reads as one block per field, so neither run is hidden behind a sideways scroll. */
+@media (max-width: 640px) {
+  .ws-compare table,
+  .ws-compare tbody,
+  .ws-compare tr,
+  .ws-compare th,
+  .ws-compare td {
+    display: block;
+    min-width: 0;
+    width: auto;
+  }
+
+  .ws-compare thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .ws-compare tr {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line-dark);
+  }
+
+  .ws-compare th,
+  .ws-compare td {
+    border-bottom: 0;
+    padding: 2px 0;
+  }
+
+  .ws-compare tbody th {
+    width: auto;
+    padding-bottom: 6px;
+  }
+
+  .ws-compare td::before {
+    content: attr(data-label) ": ";
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .ws-compare tr[data-changed="true"] td {
+    background: none;
+  }
+
+  .ws-compare tr[data-changed="true"] {
+    background: rgba(255, 79, 23, 0.07);
+    margin: 0 -6px;
+    padding: 10px 6px;
+  }
+}

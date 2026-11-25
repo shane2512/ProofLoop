@@ -14,6 +14,7 @@ import type { Db } from "./storage/db";
 import { EvidenceRepository } from "./storage/evidence";
 import { ProjectRepository } from "./storage/projects";
 import { RunRepository } from "./storage/runs";
+import { parseTestFileWrite, TestFileStore, type TestFileEntry } from "./test-files";
 import type { VerificationService } from "./verification";
 
 /** Application services for projects and criteria (INT-001 to INT-008). */
@@ -22,6 +23,7 @@ export class ProofLoopService {
   readonly criteria: CriterionRepository;
   readonly runs: RunRepository;
   readonly evidence: EvidenceRepository;
+  readonly testFiles: TestFileStore;
   /** Set by the composition root (context.ts). Absent in tests that only exercise CRUD. */
   verification: VerificationService | null = null;
 
@@ -33,6 +35,7 @@ export class ProofLoopService {
     this.criteria = new CriterionRepository(db, (rel) => hashManagedTestFile(testsDir, rel));
     this.runs = new RunRepository(db);
     this.evidence = new EvidenceRepository(db);
+    this.testFiles = new TestFileStore(testsDir);
   }
 
   listProjects(includeArchived: boolean): Project[] {
@@ -80,6 +83,24 @@ export class ProofLoopService {
     const cid = requireId(criterionId, "Criterion");
     this.projects.mustGet(pid);
     this.criteria.softDelete(pid, cid);
+  }
+
+  listTestFiles(projectId: string): TestFileEntry[] {
+    const id = requireId(projectId, "Project");
+    this.projects.mustGet(id);
+    return this.testFiles.list(id);
+  }
+
+  readTestFile(projectId: string, name: string) {
+    const id = requireId(projectId, "Project");
+    this.projects.mustGet(id);
+    return this.testFiles.read(id, name);
+  }
+
+  writeTestFile(projectId: string, name: string, body: unknown): TestFileEntry {
+    const id = requireId(projectId, "Project");
+    this.projects.mustGet(id);
+    return this.testFiles.write(id, name, parseTestFileWrite(body));
   }
 
   /** Storage health for INT-016. */

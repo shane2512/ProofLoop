@@ -200,6 +200,30 @@ export class VerificationService {
     throw new AppError("RUN_NOT_ACTIVE", "This run is not active.", 409);
   }
 
+  /**
+   * Returns a completed run's saved stdout or stderr (INT-014). The text was redacted before it was
+   * saved. The file must sit under `<data>/runs/<run-id>/`; anything else is treated as unavailable.
+   */
+  readRawOutput(runIdRaw: string, stream: "stdout" | "stderr"): string {
+    const runId = requireId(runIdRaw, "Run");
+    const run = this.d.runs.mustGet(runId);
+    const unavailable = () => new AppError("OUTPUT_UNAVAILABLE", "Output was not saved for this run.", 404);
+    const rel = stream === "stdout" ? run.rawStdoutPath : run.rawStderrPath;
+    if (!rel) throw unavailable();
+    const root = path.resolve(this.d.dirs.dataDir, "runs", run.id);
+    const abs = path.resolve(this.d.dirs.dataDir, rel);
+    const within = path.relative(root, abs);
+    if (within === "" || within.startsWith("..") || path.isAbsolute(within)) throw unavailable();
+    try {
+      const stat = fs.lstatSync(abs);
+      if (!stat.isFile()) throw unavailable();
+      return fs.readFileSync(abs, "utf8");
+    } catch (err) {
+      if (err instanceof AppError) throw err;
+      throw unavailable();
+    }
+  }
+
   getRunDetail(runIdRaw: string): RunDetailDto {
     const runId = requireId(runIdRaw, "Run");
     const run = this.d.runs.mustGet(runId);

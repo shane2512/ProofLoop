@@ -1,0 +1,106 @@
+{
+  "at": "2026-11-25T18:29:23.184Z",
+  "failed": 0,
+  "checks": [
+    {
+      "name": "loopback address answers",
+      "ok": true,
+      "detail": "200"
+    },
+    {
+      "name": "not reachable on 192.168.1.41",
+      "ok": true,
+      "detail": "{\"error\":\"ECONNREFUSED\"}"
+    },
+    {
+      "name": "TCP connect to 127.0.0.1 works",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "Host \"evil.example\" on the API -> 403",
+      "ok": true,
+      "detail": "403"
+    },
+    {
+      "name": "Host \"evil.example:3100\" on the API -> 403",
+      "ok": true,
+      "detail": "403"
+    },
+    {
+      "name": "Host \"127.0.0.1.evil.example:3100\" on the API -> 403",
+      "ok": true,
+      "detail": "403"
+    },
+    {
+      "name": "Host \"localhost:3100\" on the API -> 200",
+      "ok": true,
+      "detail": "200"
+    },
+    {
+      "name": "Host \"127.0.0.1:3100\" on the API -> 200",
+      "ok": true,
+      "detail": "200"
+    },
+    {
+      "name": "Host \"[::1]:3100\" on the API -> 200",
+      "ok": true,
+      "detail": "200"
+    },
+    {
+      "name": "Host evil.example is refused on pages too",
+      "ok": true,
+      "detail": "403"
+    },
+    {
+      "name": "a refused request leaks no project data",
+      "ok": true,
+      "detail": "{\"error\":{\"code\":\"FORBIDDEN_HOST\",\"message\":\"ProofLoop only answers requests addressed to a loopback address.\",\"details\""
+    },
+    {
+      "name": "cross-origin POST is refused",
+      "ok": true,
+      "detail": "403"
+    },
+    {
+      "name": "Sec-Fetch-Site: cross-site POST is refused",
+      "ok": true,
+      "detail": "403"
+    },
+    {
+      "name": "nothing was created by the refused requests",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "non-JSON content type is refused",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "oversized body is refused",
+      "ok": true,
+      "detail": "413"
+    },
+    {
+      "name": "security headers on /",
+      "ok": true,
+      "detail": "{\"nosniff\":\"nosniff\",\"xfo\":\"DENY\",\"csp\":\"frame-ancestors 'none'\",\"ref\":\"no-referrer\",\"powered\":null}"
+    },
+    {
+      "name": "security headers on /api/v1/health",
+      "ok": true,
+      "detail": "{\"nosniff\":\"nosniff\",\"xfo\":\"DENY\",\"csp\":\"frame-ancestors 'none'\",\"ref\":\"no-referrer\",\"powered\":null}"
+    },
+    {
+      "name": "error body has no stack trace or local path",
+      "ok": true,
+      "detail": "{\"error\":{\"code\":\"NOT_FOUND\",\"message\":\"Run not found.\",\"details\":{}}}"
+    },
+    {
+      "name": "health reveals no environment, path or version",
+      "ok": true,
+      "detail": "{\"status\":\"ok\",\"storage\":\"ready\"}"
+    }
+  ]
+}

@@ -12,7 +12,8 @@
     "start": "next start -H 127.0.0.1 -p 3000",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:live-kane": "vitest run --config vitest.live.config.mts"
   },
   "dependencies": {
     "next": "^16.4.6",

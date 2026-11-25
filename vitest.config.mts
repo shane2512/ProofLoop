@@ -13,6 +13,8 @@ export default defineConfig({
   },
   test: {
     include: ["tests/**/*.test.ts"],
+    // Live Kane tests cost credits and upload to the account. They run only via `npm run test:live-kane`.
+    exclude: ["tests/live/**", "node_modules/**"],
     environment: "node",
   },
 });

@@ -7,6 +7,8 @@ export interface AppConfig {
   dataDir: string;
   testsDir: string;
   evidenceDir: string;
+  /** Working directory for Kane processes. Kane writes .testmuai/evidence beneath it. */
+  kaneWorkDir: string;
   kaneCliPath: string | null;
   kaneTimeoutSeconds: number;
   maxConcurrentKaneRuns: 1;
@@ -69,6 +71,7 @@ export function loadConfig(env: Env = process.env, cwd: string = process.cwd()):
     dataDir,
     testsDir,
     evidenceDir,
+    kaneWorkDir: path.join(dataDir, "kane-work"),
     kaneCliPath: emptyToUndefined(env.KANE_CLI_PATH) ?? null,
     kaneTimeoutSeconds,
     maxConcurrentKaneRuns: 1,

@@ -4,6 +4,8 @@
 //
 //   node scripts/ui-e2e.mjs layout <outDir>   360 px layout, keyboard flow, dialogs. Never starts Kane.
 //   node scripts/ui-e2e.mjs live <outDir>     Full flow through the UI with a REAL Kane run (uses credits).
+//   node scripts/ui-e2e.mjs demo <outDir>     Report, copy, downloads, evidence and compare in the UI, on the runs
+//                                             that scripts/demo-loop.mjs recorded. Starts no Kane run.
 import { spawn, spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
@@ -11,7 +13,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const [mode, outArg] = process.argv.slice(2);
-if (!["layout", "live"].includes(mode)) throw new Error("mode must be layout or live");
+if (!["layout", "live", "demo"].includes(mode)) throw new Error("mode must be layout, live or demo");
 const app = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const outDir = path.resolve(app, outArg ?? `docs/phase5-${mode}`);
 fs.mkdirSync(outDir, { recursive: true });
@@ -34,8 +36,9 @@ async function health() {
 }
 if ((await health()) !== 0) throw new Error("Something already listens on :3100; not touching it.");
 
-const dataDir = path.join(app, "data", `e2e-ui-${mode}`);
-fs.rmSync(dataDir, { recursive: true, force: true });
+// `demo` mode only reads the data left by `node scripts/demo-loop.mjs`; it never wipes or starts a run.
+const dataDir = path.join(app, "data", mode === "demo" ? "demo-loop" : `e2e-ui-${mode}`);
+if (mode !== "demo") fs.rmSync(dataDir, { recursive: true, force: true });
 const server = spawn(process.execPath, [path.join(app, "node_modules", "next", "dist", "bin", "next"), "start", "-H", "127.0.0.1", "-p", "3100"], {
   cwd: app,
   env: { ...process.env, PROOFLOOP_DATA_DIR: dataDir, PROOFLOOP_PORT: "3100" },
@@ -247,6 +250,79 @@ Verify the page shows the "Products" heading and at least one product with an "A
     check("keyboard: focus returns to the button that opened it", await js(`(document.activeElement && document.activeElement.getAttribute('aria-label')) === ${JSON.stringify(opener)}`));
     check("keyboard: Escape started no run", (await api("GET", `/projects/${project.id}/runs`)).runs.length === 0);
     await shot("1280-project");
+  } else if (mode === "demo") {
+    // ---- Demo data: handoff report, clipboard, downloads, evidence, compare ----
+    const state = JSON.parse(fs.readFileSync(path.join(dataDir, "state.json"), "utf8"));
+    await send("Browser.grantPermissions", { origin: base, permissions: ["clipboardReadWrite", "clipboardSanitizedWrite"] });
+    for (const [label, w, h, mobile] of [["1280", 1280, 1000, false], ["360", 360, 800, true]]) {
+      await viewport(w, h, mobile);
+      await goto(base + `/workspace/projects/${state.projectId}`);
+      await waitFor(`document.querySelectorAll('.ws-history-row').length === 2`, "history with two runs");
+      check(`${label}: criterion is Verified because of the newest passing run`, await js(`document.querySelector('.ws-criterion .ws-badge').textContent.trim() === 'Verified'`));
+      const rows = await js(`[...document.querySelectorAll('.ws-history-row')].map(r => r.querySelector('.ws-badge').textContent.trim())`);
+      check(`${label}: history lists the newest run first, and keeps the failure`, rows[0] === "Passed" && rows[1] === "Failed", JSON.stringify(rows));
+
+      // Open the FAILED run from history.
+      await js(`[...document.querySelectorAll('.ws-history-row')].find(r => r.textContent.includes('Failed')).click()`);
+      await waitFor(`document.querySelector('.ws-run .ws-run-status .ws-badge')?.textContent.trim() === 'Failed'`, "failed run panel");
+      await waitFor(`document.querySelector('textarea[aria-label="Report text"]')?.value.length > 200`, "report loaded");
+      const report = await js(`document.querySelector('textarea[aria-label="Report text"]').value`);
+      check(`${label}: report shows the failure, Kane's diagnosis and the criterion`, report.includes("**FAILED**") && report.includes("Login navigated to /products") && report.includes("Expected behavior: After signing in") && report.includes("Not recorded"));
+      check(`${label}: report has no username, data folder or account id`, !/shane|data\\\\demo-loop|01M89/i.test(report));
+      check(`${label}: panel labels Kane's diagnosis as Kane's`, await js(`document.querySelector('.ws-run').innerText.includes("Kane's diagnosis (not ProofLoop's)")`));
+
+      // Copy goes to the real clipboard, only when asked.
+      const before = await js(`navigator.clipboard.readText().catch(() => '')`);
+      check(`${label}: nothing was copied before the button was pressed`, before !== report);
+      await send("Emulation.setFocusEmulationEnabled", { enabled: true });
+      await js(`window.focus()`);
+      await js(`[...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Copy report').click()`);
+      await waitFor(`document.body.innerText.includes('Copied to the clipboard.') || document.body.innerText.includes('blocked copying')`, "copy result");
+      const outcome = await js(`document.body.innerText.includes('Copied to the clipboard.') ? 'copied' : 'blocked'`);
+      const readBack = await js(`navigator.clipboard.readText().then(t => ({ ok: true, t }), e => ({ ok: false, t: '', err: String(e) }))`);
+      result.notes.push(`${label}: copy outcome=${outcome}; clipboard read ok=${readBack.ok}${readBack.err ? ` (${readBack.err})` : ""}`);
+      if (outcome === "copied") {
+        // Windows turns \n into \r\n on the clipboard. Compare the text with line endings normalised.
+        const lineCount = report.split("\n").length - 1;
+        check(`${label}: Copy report puts exactly the report on the clipboard`, readBack.ok && readBack.t.replace(/\r\n/g, "\n") === report, `${readBack.t.length} chars read back, ${report.length} in the report, ${lineCount} lines`);
+      } else {
+        // The browser refused the write. The fallback must have selected the report for Ctrl+C.
+        const sel = await js(`(()=>{const t=document.querySelector('textarea[aria-label="Report text"]'); return { focused: document.activeElement === t, all: t.selectionStart === 0 && t.selectionEnd === t.value.length };})()`);
+        check(`${label}: when the browser blocks copying, the report is selected for Ctrl+C`, sel.focused && sel.all, JSON.stringify(sel));
+      }
+
+      // Downloads are the same report the page shows.
+      const md = await js(`fetch(document.querySelector('a[href*="format=markdown"]').getAttribute('href')).then(r => r.text())`);
+      check(`${label}: Markdown download equals the report on screen`, md === report);
+      const jsonText = await js(`fetch(document.querySelector('a[href$="format=json"]').getAttribute('href')).then(r => r.text())`);
+      const parsed = JSON.parse(jsonText);
+      check(`${label}: JSON download is schemaVersion 1 with no raw output`, parsed.schemaVersion === 1 && parsed.output.included === false && !jsonText.includes('"stdout"'));
+      const rawText = await js(`fetch(document.querySelector('a[href*="includeOutput=true"]').getAttribute('href')).then(r => r.text())`);
+      const rawParsed = JSON.parse(rawText);
+      check(`${label}: raw output is only in the explicit export`, rawParsed.output.included === true && rawParsed.output.stdout.includes("test_md_done") && !/shane|01M89/i.test(rawText));
+
+      // Evidence file download.
+      const ev = await js(`(async () => { const a = document.querySelector('a[href*="/evidence/"]'); if (!a) return null; const r = await fetch(a.getAttribute('href')); const b = new Uint8Array(await r.arrayBuffer()); return { status: r.status, type: r.headers.get('content-type'), disp: r.headers.get('content-disposition'), head: [...b.slice(0, 2)], size: b.length }; })()`);
+      check(`${label}: evidence downloads as a file (zip signature)`, ev && ev.status === 200 && ev.head[0] === 0x50 && ev.head[1] === 0x4b && /attachment/.test(ev.disp), JSON.stringify(ev));
+
+      // Compare with the passing run.
+      await js(`(()=>{const s = document.querySelector('select[id^="cmp-sel-"]'); const o = [...s.options].find(o => o.value); const set = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value').set; set.call(s, o.value); s.dispatchEvent(new Event('change', { bubbles: true }));})()`);
+      await waitFor(`!!document.querySelector('[aria-label="Run comparison"] table')`, "comparison table");
+      const cells = await js(`(()=>{ const row = [...document.querySelectorAll('[aria-label="Run comparison"] tbody tr')].find(r => r.querySelector('th').textContent.startsWith('Status')); return [...row.querySelectorAll('td')].map(c => c.textContent.trim()); })()`);
+      check(`${label}: comparison shows FAILED then PASSED`, cells[0] === "FAILED" && cells[1] === "PASSED", JSON.stringify(cells));
+      check(`${label}: comparison states it infers no cause`, await js(`document.querySelector('[aria-label="Run comparison"]').innerText.includes('does not infer what caused them')`));
+      const m = await js(`({ sw: document.documentElement.scrollWidth, iw: innerWidth })`);
+      check(`${label}: no horizontal scroll with report and comparison open`, m.sw <= m.iw, JSON.stringify(m));
+      await js(`document.querySelector('.ws-run').scrollIntoView()`);
+      await sleep(400);
+      await shot(`demo-${label}-run`);
+      await js(`document.querySelector('textarea[aria-label="Report text"]').scrollIntoView({block:'center'})`);
+      await sleep(300);
+      await shot(`demo-${label}-report`);
+      await js(`document.querySelector('[aria-label="Run comparison"]').scrollIntoView({block:'center'})`);
+      await sleep(300);
+      await shot(`demo-${label}-compare`);
+    }
   } else {
     // ---- Live: everything through the UI, then a real Kane run ----
     await viewport(1280, 900, false);

@@ -74,7 +74,9 @@ export default function DocsPage() {
               <h2>
                 <span className="dot">02</span>Install and run
               </h2>
-              <p>From the <code>proofloop-app</code> folder:</p>
+              <p>
+                From the cloned <code>ProofLoop</code> folder (see <a href="/run-locally">Run it on your machine</a> for the full walk-through, including logging in to Kane):
+              </p>
               <CopyCode lines={["npm ci", "npm run build", "npm start"]} />
               <p>
                 Then open <code>http://127.0.0.1:3000</code>. The server only listens on loopback; do not expose it to a network.

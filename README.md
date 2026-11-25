@@ -69,7 +69,7 @@ Visual QA: `node scripts/shoot.mjs <url> <outDir> <label> 1440x900 0,1,2` takes 
 
 ## Hosted showcase (not the app)
 
-The app needs your machine: Kane, Chrome and a local data folder. A hosted copy can only show the marketing pages. Setting `PROOFLOOP_PUBLIC_SITE=1` (done on the Vercel project) switches `proxy.ts` to a read-only mode: GET and HEAD for `/`, `/workflow`, `/evidence`, `/faq` and `/docs` are served, `/workspace` redirects to `/docs`, and the whole API and every other path return 404. No project, run or file can be created there, and no Kane process can start. Without that variable the app answers loopback requests only. The policy is in `src/server/security/request-policy.ts` and tested in `tests/request-policy.test.ts`.
+The app needs your machine: Kane, Chrome and a local data folder. A hosted copy can only show the marketing pages. Setting `PROOFLOOP_PUBLIC_SITE=1` (done on the Vercel project) switches `proxy.ts` to a read-only mode: GET and HEAD for `/`, `/workflow`, `/evidence`, `/faq` and `/docs` are served, `/workspace` (and anything under it) shows the "Run it on your machine" steps from `/run-locally` at the same address, and the whole API and every other path return 404. No project, run or file can be created there, and no Kane process can start. Without that variable the app answers loopback requests only. The policy is in `src/server/security/request-policy.ts` and tested in `tests/request-policy.test.ts`.
 
 ## Limits
 

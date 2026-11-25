@@ -29,9 +29,15 @@ describe("public showcase mode (PROOFLOOP_PUBLIC_SITE=1)", () => {
     expect(pub({ pathname: "/docs/" }).action).toBe("allow");
   });
 
-  it("sends the workspace to the setup guide", () => {
+  it("shows the run-it-locally steps at the workspace address, without rendering the dashboard", () => {
     for (const pathname of ["/workspace", "/workspace/", "/workspace/projects/abc"]) {
-      expect(pub({ pathname })).toEqual({ action: "redirect", to: "/docs" });
+      expect(pub({ pathname })).toEqual({ action: "rewrite", to: "/run-locally" });
+    }
+  });
+
+  it("only rewrites reads of the workspace; writes to it are refused", () => {
+    for (const method of ["POST", "PUT", "PATCH", "DELETE"]) {
+      expect(pub({ method, pathname: "/workspace" })).toMatchObject({ action: "deny", status: 404 });
     }
   });
 

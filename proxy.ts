@@ -14,7 +14,7 @@ export function proxy(request: NextRequest): NextResponse {
     publicSite: process.env.PROOFLOOP_PUBLIC_SITE === "1",
   });
   if (decision.action === "allow") return NextResponse.next();
-  if (decision.action === "redirect") return NextResponse.redirect(new URL(decision.to, request.url), 307);
+  if (decision.action === "rewrite") return NextResponse.rewrite(new URL(decision.to, request.url));
   const body = { error: { code: decision.code, message: decision.message, details: {} } };
   return NextResponse.json(body, { status: decision.status });
 }

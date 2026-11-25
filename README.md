@@ -27,9 +27,27 @@ Then open http://127.0.0.1:3000 and http://127.0.0.1:3000/api/v1/health. Copy `.
 
 The npm scripts bind to `127.0.0.1` only. Do not expose the app to a network.
 
+## Site
+
+The app now opens on a marketing site that explains the product honestly (unbuilt features are labeled with their phase):
+
+| Route | Content |
+|---|---|
+| `/` | Landing: halo hero, pinned ink-bloom scene, bento of how a criterion is verified |
+| `/workflow` | The six-step loop as a sticky card stack, plus the real build status |
+| `/evidence` | What each run records, the six run outcomes, criterion statuses |
+| `/faq` | Plain answers, including limits and the TestMu dashboard overlap |
+| `/docs` | Setup, Kane connection, test file location, configuration, local API |
+| `/workspace` | Live server readout (moved from the old `/` status page); dashboard arrives in Phase 5 |
+
+Motion uses GSAP ScrollTrigger and Lenis (`src/components/motion/`). Pages stay server-rendered and opt in with `data-*` attributes; everything is reverted on route change. Reduced-motion users get a static page and native scrolling, and content is never left hidden if scripts fail to load. Visuals (`src/components/visual/`) are procedural canvas and CSS, with no image assets.
+
+Visual QA: `node scripts/shoot.mjs <url> <outDir> <label> 1440x900 0,1,2` takes headless Chrome screenshots at scroll positions (viewport multiples).
+
 ## Layout
 
-- `app/`: routes and UI (thin).
+- `app/(site)/`: site pages and the shared nav/footer layout. `app/api/v1/`: the local API.
+- `src/components/{site,motion,visual}`: client and server UI components.
 - `src/server/{domain,storage,kane,reports,security}`: server-only modules, each marked `server-only`.
 - `src/server/config.ts`: validated configuration (loopback host required).
 - `tests/`: application tests. These are ProofLoop tests, not Kane verification.

@@ -1,20 +1,35 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import { Doto, Geist_Mono } from "next/font/google";
 import type { ReactNode } from "react";
+import "./globals.css";
+
+const dot = Doto({ subsets: ["latin"], weight: ["600", "800", "900"], variable: "--font-dot", display: "swap" });
+const mono = Geist_Mono({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-mono", display: "swap" });
 
 export const metadata: Metadata = {
-  title: "ProofLoop",
-  description: "Local-first verification workspace for AI-assisted development.",
+  title: { default: "ProofLoop: prove the fix with real Kane CLI runs", template: "%s | ProofLoop" },
+  description:
+    "ProofLoop maps human-written acceptance criteria to real Kane CLI browser runs, keeps the evidence, and re-verifies every fix. Local-first, single-user.",
 };
+
+export const viewport: Viewport = {
+  themeColor: "#070708",
+};
+
+/**
+ * Runs before first paint. Marks the document for motion (content is hidden only until the motion
+ * controller reveals it) unless the user prefers reduced motion, and reveals everything after 3.5 s
+ * if the scripts never arrive, so content is never stuck invisible.
+ */
+const motionBoot = `(function(){try{var d=document.documentElement;if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){d.classList.add('has-motion');setTimeout(function(){d.classList.add('motion-ready')},3500)}}catch(e){}})();`;
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
-      <body style={{ fontFamily: "system-ui, sans-serif", margin: 0 }}>
-        <div role="note" style={{ background: "#fff4ce", padding: "0.5rem 1rem", fontSize: "0.9rem" }}>
-          Local-only app. It runs on this machine and is not safe to expose to a network.
-        </div>
-        <main style={{ maxWidth: 720, margin: "0 auto", padding: "1rem" }}>{children}</main>
-      </body>
+    <html lang="en" className={`${dot.variable} ${mono.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: motionBoot }} />
+      </head>
+      <body>{children}</body>
     </html>
   );
 }

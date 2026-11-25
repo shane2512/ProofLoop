@@ -29,6 +29,10 @@ helper-output-*/
 # Raw Phase 0 captures (may contain account details; sanitized copies go in docs/phase0-samples/)
 docs/phase0-raw/
 
+# Design reference recording and QA screenshots (the recording shows the owner's browser tabs)
+vids/
+docs/*.log
+
 # logs and coverage
 *.log
 coverage/

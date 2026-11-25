@@ -1,7 +1,7 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
 import type { Criterion, RunStatus } from "../domain/types";
-import { deriveCriterionStatus } from "../domain/status";
+import { deriveCriterionStatus, type LatestRunFacts } from "../domain/status";
 import { LIMITS, type CriterionCreateInput, type CriterionPatchInput } from "../domain/validation";
 import { AppError } from "../errors";
 import { isUniqueViolation, transaction, type Db } from "./db";
@@ -18,34 +18,20 @@ interface CriterionRow {
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
-  last_run_id: string | null;
-  last_run_status: RunStatus | null;
 }
 
-// The latest run decides the derived status. rowid breaks created_at ties.
-const SELECT_CRITERION = `
-SELECT c.*,
-  (SELECT r.id FROM runs r WHERE r.criterion_id = c.id ORDER BY r.created_at DESC, r.rowid DESC LIMIT 1) AS last_run_id,
-  (SELECT r.status FROM runs r WHERE r.criterion_id = c.id ORDER BY r.created_at DESC, r.rowid DESC LIMIT 1) AS last_run_status
-FROM criteria c`;
-
-function toCriterion(r: CriterionRow): Criterion {
-  return {
-    id: r.id,
-    projectId: r.project_id,
-    title: r.title,
-    expectedBehavior: r.expected_behavior,
-    notes: r.notes,
-    testFile: r.test_file,
-    stepLabel: r.step_label,
-    position: r.position,
-    status: deriveCriterionStatus(r.last_run_status),
-    lastRunId: r.last_run_id,
-    createdAt: r.created_at,
-    updatedAt: r.updated_at,
-    deletedAt: r.deleted_at,
-  };
+interface LatestRunRow {
+  id: string;
+  status: RunStatus;
+  test_file_snapshot: string;
+  test_file_sha256: string | null;
+  criterion_snapshot_json: string;
 }
+
+/** Hashes the mapped test file as it is now. Returns null when it is missing or unreadable. */
+export type TestFileHasher = (relativeTestFile: string) => string | null;
+
+const SELECT_CRITERION = "SELECT c.* FROM criteria c";
 
 const notFound = () => new AppError("NOT_FOUND", "Criterion not found.", 404);
 const pathConflict = () =>
@@ -54,13 +40,67 @@ const pathConflict = () =>
   });
 
 export class CriterionRepository {
-  constructor(private readonly db: Db) {}
+  /**
+   * @param hashTestFile resolves the CURRENT hash of a mapped test file. The default returns null, which
+   * can never produce VERIFIED, so a caller that forgets to supply it fails safe.
+   */
+  constructor(
+    private readonly db: Db,
+    private readonly hashTestFile: TestFileHasher = () => null,
+  ) {}
+
+  private toCriterion(r: CriterionRow): Criterion {
+    const latest = this.db
+      .prepare(
+        "SELECT id, status, test_file_snapshot, test_file_sha256, criterion_snapshot_json FROM runs WHERE criterion_id = ? ORDER BY created_at DESC, rowid DESC LIMIT 1",
+      )
+      .get(r.id) as LatestRunRow | undefined;
+
+    let facts: LatestRunFacts | null = null;
+    if (latest) {
+      let snapshotExpected = "";
+      try {
+        snapshotExpected = (JSON.parse(latest.criterion_snapshot_json) as { expectedBehavior?: string }).expectedBehavior ?? "";
+      } catch {
+        snapshotExpected = "";
+      }
+      facts = {
+        status: latest.status,
+        testFile: latest.test_file_snapshot,
+        testFileSha256: latest.test_file_sha256,
+        expectedBehavior: snapshotExpected,
+      };
+    }
+    // Hashing reads a file, so only do it when it can change the answer.
+    const needsHash = facts !== null && facts.status === "PASSED";
+    const derived = deriveCriterionStatus(facts, {
+      testFile: r.test_file,
+      expectedBehavior: r.expected_behavior,
+      currentTestFileSha256: needsHash ? this.hashTestFile(r.test_file) : null,
+    });
+    return {
+      id: r.id,
+      projectId: r.project_id,
+      title: r.title,
+      expectedBehavior: r.expected_behavior,
+      notes: r.notes,
+      testFile: r.test_file,
+      stepLabel: r.step_label,
+      position: r.position,
+      status: derived.status,
+      statusNote: derived.note,
+      lastRunId: latest?.id ?? null,
+      createdAt: r.created_at,
+      updatedAt: r.updated_at,
+      deletedAt: r.deleted_at,
+    };
+  }
 
   listActive(projectId: string): Criterion[] {
     const rows = this.db
       .prepare(`${SELECT_CRITERION} WHERE c.project_id = ? AND c.deleted_at IS NULL ORDER BY c.position ASC`)
       .all(projectId) as unknown as CriterionRow[];
-    return rows.map(toCriterion);
+    return rows.map((r) => this.toCriterion(r));
   }
 
   get(projectId: string, criterionId: string, includeDeleted = false): Criterion | null {
@@ -69,7 +109,7 @@ export class CriterionRepository {
       .get(projectId, criterionId) as CriterionRow | undefined;
     if (!row) return null;
     if (row.deleted_at !== null && !includeDeleted) return null;
-    return toCriterion(row);
+    return this.toCriterion(row);
   }
 
   mustGet(projectId: string, criterionId: string, includeDeleted = false): Criterion {

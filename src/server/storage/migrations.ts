@@ -116,4 +116,22 @@ BEGIN
 END;
 `,
   },
+  {
+    version: 2,
+    name: "run_verification_columns",
+    sql: `
+-- Hash of the mapped _test.md at run creation. Part of the immutable run identity.
+ALTER TABLE runs ADD COLUMN test_file_sha256 TEXT NULL;
+-- Lifecycle fields written once, when the run completes.
+ALTER TABLE runs ADD COLUMN error_code TEXT NULL;
+ALTER TABLE runs ADD COLUMN command_json TEXT NULL;
+ALTER TABLE runs ADD COLUMN kane_result_json TEXT NULL;
+
+CREATE TRIGGER trg_runs_immutable_test_hash
+BEFORE UPDATE OF test_file_sha256 ON runs
+BEGIN
+  SELECT RAISE(ABORT, 'runs identity and snapshot columns are immutable');
+END;
+`,
+  },
 ];

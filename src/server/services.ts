@@ -7,25 +7,32 @@ import {
   parseProjectPatch,
   requireId,
 } from "./domain/validation";
+import { hashManagedTestFile } from "./kane/testfile";
 import { resolveManagedTestPath } from "./security/paths";
 import { CriterionRepository } from "./storage/criteria";
 import type { Db } from "./storage/db";
+import { EvidenceRepository } from "./storage/evidence";
 import { ProjectRepository } from "./storage/projects";
 import { RunRepository } from "./storage/runs";
+import type { VerificationService } from "./verification";
 
 /** Application services for projects and criteria (INT-001 to INT-008). */
 export class ProofLoopService {
   readonly projects: ProjectRepository;
   readonly criteria: CriterionRepository;
   readonly runs: RunRepository;
+  readonly evidence: EvidenceRepository;
+  /** Set by the composition root (context.ts). Absent in tests that only exercise CRUD. */
+  verification: VerificationService | null = null;
 
   constructor(
     readonly db: Db,
     private readonly testsDir: string,
   ) {
     this.projects = new ProjectRepository(db);
-    this.criteria = new CriterionRepository(db);
+    this.criteria = new CriterionRepository(db, (rel) => hashManagedTestFile(testsDir, rel));
     this.runs = new RunRepository(db);
+    this.evidence = new EvidenceRepository(db);
   }
 
   listProjects(includeArchived: boolean): Project[] {

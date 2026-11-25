@@ -1,14 +1,31 @@
 // TEST FIXTURE PROCESS. Not Kane. Simulates stdout/stderr/exit behavior to test ProofLoop's
 // process supervision. Output from this script can never count as a Kane verification.
+import fs from "node:fs";
 import os from "node:os";
+import path from "node:path";
 
-const mode = process.argv[2] ?? "pass";
+let mode = process.argv[2] ?? "pass";
+let writePack = false;
+let ingest = true;
+// Invoked like Kane (`testmd run <file> ...`): the mode comes from a marker inside the test file.
+if (mode === "testmd") {
+  const text = fs.readFileSync(process.argv[4], "utf8");
+  mode = /FAKE_MODE=(\S+)/.exec(text)?.[1] ?? "pass";
+  writePack = text.includes("FAKE_PACK=1");
+  ingest = !text.includes("FAKE_NO_INGEST=1");
+}
 const EVIDENCE_ID = "2ea337ce-92f8-468e-af86-b8a22daa2002";
 const line = (o) => process.stdout.write(JSON.stringify(o) + "\n");
 const base = (type, extra = {}) => ({ type, v: 1, ts: new Date().toISOString(), ...extra });
 
 function terminal(status) {
-  line(base("test_md_evidence_ingest", { status: "ok", evidence_id: EVIDENCE_ID }));
+  if (writePack) {
+    const dir = path.join(process.cwd(), ".testmuai", "evidence");
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, `${EVIDENCE_ID}.evidence`), Buffer.concat([Buffer.from([0x50, 0x4b, 0x03, 0x04]), Buffer.from("fake pack")]));
+    process.stderr.write(`evidence: view locally with \`kane-cli evidence serve ${path.join(dir, EVIDENCE_ID + ".evidence")}\`\n`);
+  }
+  if (ingest) line(base("test_md_evidence_ingest", { status: "ok", evidence_id: EVIDENCE_ID }));
   line(base("test_md_summary", { overall_status: status, duration_s: 1, steps: { total: 1, passed: status === "passed" ? 1 : 0, failed: status === "passed" ? 0 : 1, skipped: 0, replay_decisions: 0, author_decisions: 1 }, upload: { performed: true, succeeded: true }, commit: { committed: false }, cancelled: false }));
   line(base("test_md_done", { overall_status: status, duration_s: 1, session_id: "sess-1" }));
 }
@@ -102,6 +119,13 @@ switch (mode) {
   case "hang":
     line(base("stream_start", {}));
     setInterval(() => undefined, 1000);
+    break;
+  case "slowpass":
+    line(base("stream_start", {}));
+    setTimeout(() => {
+      terminal("passed");
+      process.exit(0);
+    }, 1500);
     break;
   default:
     process.stderr.write("unknown mode\n");

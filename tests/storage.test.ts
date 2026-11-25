@@ -111,6 +111,7 @@ describe("storage", () => {
     const snap = { projectName: p.name, targetUrl: p.targetUrl, title: c.title, expectedBehavior: "E", notes: null, testFile: c.testFile, stepLabel: null };
     const r1 = svc.runs.createQueued(p.id, c.id, snap);
     expect(svc.getProject(p.id).criteria[0]?.status).toBe("RUNNING");
+    svc.runs.updateLifecycle(r1.id, { status: "RUNNING" });
     svc.runs.updateLifecycle(r1.id, { status: "FAILED", exitCode: 1 });
     expect(svc.getProject(p.id).criteria[0]?.status).toBe("FAILED");
     const r2 = svc.runs.createQueued(p.id, c.id, snap);
@@ -125,6 +126,8 @@ describe("storage", () => {
     const c = svc.createCriterion(p.id, crit(1));
     const snap = { projectName: p.name, targetUrl: p.targetUrl, title: c.title, expectedBehavior: "E", notes: null, testFile: c.testFile, stepLabel: null };
     const r = svc.runs.createQueued(p.id, c.id, snap);
+    expect(codeOf(() => svc.runs.updateLifecycle(r.id, { status: "PASSED" }))).toBe("CONFLICT"); // cannot skip RUNNING
+    svc.runs.updateLifecycle(r.id, { status: "RUNNING" });
     svc.runs.updateLifecycle(r.id, { status: "PASSED", exitCode: 0 });
     expect(codeOf(() => svc.runs.updateLifecycle(r.id, { status: "FAILED" }))).toBe("CONFLICT");
     expect(svc.runs.mustGet(r.id).status).toBe("PASSED");

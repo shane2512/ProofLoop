@@ -37,20 +37,49 @@ export function checkDataDir(dir: string): void {
   }
 }
 
-/** Runs `fn` in an immediate write transaction; rolls back on any throw. */
+const txDepth = new WeakMap<Db, number>();
+
+/**
+ * Runs `fn` in a write transaction; rolls back on any throw. Calls made inside another
+ * `transaction` become savepoints, so callers can compose repository methods atomically.
+ */
 export function transaction<T>(db: Db, fn: () => T): T {
-  db.exec("BEGIN IMMEDIATE");
+  const depth = txDepth.get(db) ?? 0;
+  if (depth === 0) {
+    db.exec("BEGIN IMMEDIATE");
+    txDepth.set(db, 1);
+    try {
+      const result = fn();
+      db.exec("COMMIT");
+      return result;
+    } catch (err) {
+      try {
+        db.exec("ROLLBACK");
+      } catch {
+        // Connection already rolled back; keep the original error.
+      }
+      throw err;
+    } finally {
+      txDepth.set(db, 0);
+    }
+  }
+  const savepoint = `sp_${depth}`;
+  db.exec(`SAVEPOINT ${savepoint}`);
+  txDepth.set(db, depth + 1);
   try {
     const result = fn();
-    db.exec("COMMIT");
+    db.exec(`RELEASE ${savepoint}`);
     return result;
   } catch (err) {
     try {
-      db.exec("ROLLBACK");
+      db.exec(`ROLLBACK TO ${savepoint}`);
+      db.exec(`RELEASE ${savepoint}`);
     } catch {
-      // Connection already rolled back; keep the original error.
+      // Outer transaction already rolled back; keep the original error.
     }
     throw err;
+  } finally {
+    txDepth.set(db, depth);
   }
 }
 

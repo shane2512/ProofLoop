@@ -52,7 +52,7 @@ const server = http.createServer((req, res) => {
       const form = new URLSearchParams(body);
       const ok = form.get("user") === "standard_user" && form.get("password") === "secret_sauce";
       if (!ok) return send(401, page("Demo Shop: Login", `<h1>Demo Shop</h1><p role="alert">Username and password do not match.</p>${loginPage.split("<h1>Demo Shop</h1>")[1] ?? ""}`));
-      res.writeHead(303, { location: "/products" });
+      res.writeHead(303, { location: INVENTORY_PATH });
       res.end();
     });
     return;

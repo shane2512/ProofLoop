@@ -2,13 +2,15 @@
 
 Local-first app that connects acceptance criteria to Kane CLI browser verification. Specification documents are in `../proofloop/`.
 
-**Status: Phase 2 complete (backend and data layer). Kane validation (Phase 0) done on kane-cli 0.10.9, see `docs/phase0-findings.md`. Phase 3 (Kane adapter) complete and live-tested; it is not wired to the API yet (Phase 4).** Projects and criteria have a local SQLite store and a REST API under `/api/v1`. There is no UI beyond a status page and no Kane execution yet. Phase 0 (Kane validation) was skipped at the owner's request. Kane version, command behavior, exit codes, and evidence locations are **not validated** and must be checked before Phase 3.
+**Status: Phase 2 complete (backend and data layer). Kane validation (Phase 0) done on kane-cli 0.10.9, see `docs/phase0-findings.md`. Phase 3 (Kane adapter) and Phase 4 (verification engine) complete and live-tested. There is still no UI beyond a status page (Phase 5).** Projects and criteria have a local SQLite store and a REST API under `/api/v1`. There is no UI beyond a status page and no Kane execution yet. Phase 0 (Kane validation) was skipped at the owner's request. Kane version, command behavior, exit codes, and evidence locations are **not validated** and must be checked before Phase 3.
 
-Data lives in `PROOFLOOP_DATA_DIR` (default `./data`, gitignored). For real use, point it outside the repository. Reports: `docs/phase1-report.md`, `docs/phase2-report.md`, `docs/phase3-report.md`.
+Data lives in `PROOFLOOP_DATA_DIR` (default `./data`, gitignored). For real use, point it outside the repository. Reports: `docs/phase1-report.md`, `docs/phase2-report.md`, `docs/phase3-report.md`, `docs/phase4-report.md`.
 
 Tests: `npm test` runs application, parser-fixture and fake-process tests (no Kane, no credits). `npm run test:live-kane` runs the real Kane CLI through the adapter. It needs an authenticated `kane-cli` 0.10.9, Chrome and credits, uploads each run to your TestMu Test Manager, and is never part of `npm test`.
 
-API (local only): `GET/POST /api/v1/projects`, `GET/PATCH/DELETE /api/v1/projects/:id` (DELETE archives), `POST /api/v1/projects/:id/criteria`, `PATCH/DELETE /api/v1/projects/:id/criteria/:criterionId`, `GET /api/v1/health`. Run endpoints are not implemented.
+API (local only): `GET/POST /api/v1/projects`, `GET/PATCH/DELETE /api/v1/projects/:id` (DELETE archives), `POST /api/v1/projects/:id/criteria`, `PATCH/DELETE /api/v1/projects/:id/criteria/:criterionId`, `GET /api/v1/health`. Runs: `POST /api/v1/projects/:id/criteria/:criterionId/runs` (body `{}`, returns `202` and polls), `GET /api/v1/runs/:runId`, `GET /api/v1/projects/:id/runs`, `POST /api/v1/runs/:runId/cancel`. Report, output and evidence download endpoints are not implemented yet.
+
+A criterion is `VERIFIED` only when its newest run passed in real Kane and its test file, mapping and expected behavior are unchanged since. Put test files under `<PROOFLOOP_TESTS_DIR>/<project-id>/<name>_test.md`.
 
 ## Setup (Windows, Command Prompt)
 

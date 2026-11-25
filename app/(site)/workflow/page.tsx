@@ -51,8 +51,8 @@ const STEPS: Array<{ code: string; title: string; text: string; detail: string; 
     code: "L/05",
     title: "Hand off the facts",
     text: "A report with the expected behavior, what Kane observed, the exit code and evidence references. You copy it to your coding agent yourself.",
-    detail: "Report builder and copy flow arrive in Phase 6.",
-    state: "next",
+    detail: "Copy or download from any finished run. Nothing is sent anywhere.",
+    state: "built",
     tone: "accent",
     pattern: "dots",
   },
@@ -60,8 +60,8 @@ const STEPS: Array<{ code: string; title: string; text: string; detail: string; 
     code: "L/06",
     title: "Re-verify the fix",
     text: "After you review the agent's change, a new run is a new record. The old failure stays, so the before and after sit side by side.",
-    detail: "Engine built. Compare view arrives in Phase 7.",
-    state: "partial",
+    detail: "Compare any two finished runs of a criterion. The page lists differences and claims no cause.",
+    state: "built",
     tone: "light",
     pattern: "grid",
   },
@@ -74,8 +74,10 @@ const PHASES: Array<{ code: string; name: string; text: string; state: "done" | 
   { code: "P/03", name: "Kane adapter", text: "No-shell spawn, capped capture, parser, evidence discovery, redaction.", state: "done" },
   { code: "P/04", name: "Verification engine", text: "Run lifecycle, freshness-aware VERIFIED rule, run API.", state: "done" },
   { code: "P/05", name: "Dashboard", text: "Project, criterion and run screens inside the workspace.", state: "done" },
-  { code: "P/06", name: "Agent handoff", text: "Factual report, redaction, copy and download.", state: "next" },
-  { code: "P/07", name: "History and exports", text: "Run timeline, before and after compare, JSON and Markdown.", state: "later" },
+  { code: "P/06", name: "Agent handoff", text: "Factual report, redaction, copy and download. A real failure, fix and pass of one criterion is recorded.", state: "done" },
+  { code: "P/07", name: "History and exports", text: "Run history filter, before and after compare, evidence download, JSON and Markdown.", state: "done" },
+  { code: "P/08", name: "Hardening", text: "Loopback Host guard, security headers, restart and disk-fault tests, clean-clone install check.", state: "done" },
+  { code: "P/09", name: "Submission", text: "Demo steps and a submission kit are ready. Publishing, the video and posts are yours to do.", state: "next" },
 ];
 
 const STATE_LABEL = { built: "Built", next: "Next", partial: "Partly built", done: "Done", later: "Planned" } as const;
@@ -118,7 +120,7 @@ export default function WorkflowPage() {
 
       <section className="section section-dark" id="status" aria-labelledby="status-title">
         <div className="section-head">
-          <Lines lines={[<span key="t" id="status-title">What is built</span>, <span key="b" className="dim">and what is next</span>]} />
+          <Lines lines={[<span key="t" id="status-title">What is built</span>, <span key="b" className="dim">and what is left</span>]} />
           <p data-reveal>This site describes the whole loop. The list below is the honest state of the code today.</p>
         </div>
         <div className="rows" data-reveal-group>

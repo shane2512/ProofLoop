@@ -123,7 +123,7 @@ export default function LandingPage() {
               </div>
             </article>
             <article className="card card-pad" data-reveal-item style={{ flex: 1, minHeight: 260, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-              <span className="tag tag-next">Next: Phase 6</span>
+              <span className="tag tag-live">Built</span>
               <div>
                 <p className="card-code dot">H/01</p>
                 <p className="card-text" style={{ color: "var(--ink)", fontSize: 14, fontWeight: 600 }}>

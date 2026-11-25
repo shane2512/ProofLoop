@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "kind": "proofloop.run-report",
+  "run": {
+    "id": "1bd8a628-1c27-40eb-be93-d0df043b0b7c",
+    "status": "FAILED",
+    "exitCode": 1,
+    "exitCodeReason": null,
+    "signal": null,
+    "timedOut": false,
+    "canceled": false,
+    "errorCode": "EXIT_NONZERO",
+    "summary": "Kane reported the test file failed (exit 1).",
+    "durationMs": 135165,
+    "createdAt": "2026-11-25T18:22:35.778Z",
+    "startedAt": "2026-11-25T18:22:35.782Z",
+    "finishedAt": "2026-11-25T18:24:50.946Z",
+    "stdoutTruncated": false,
+    "stderrTruncated": false
+  },
+  "project": {
+    "name": "Demo shop closed loop",
+    "targetUrl": "http://127.0.0.1:4100/"
+  },
+  "criterion": {
+    "id": "29c4868d-9c19-4021-9cf7-b81bbf72c104",
+    "title": "Login reaches the products page",
+    "expectedBehavior": "After signing in with the demo account, the browser shows the Products page with a product list and Add to cart buttons.",
+    "stepLabel": "Products page is shown",
+    "notes": null,
+    "testFile": "ac7859df-92cd-4712-83bc-cb0a957c7537/login_test.md"
+  },
+  "kane": {
+    "observed": true,
+    "reason": null,
+    "cliVersion": "0.10.9",
+    "finalStatus": "failed",
+    "finalStatusReason": null,
+    "summary": {
+      "overallStatus": "failed",
+      "durationS": 117,
+      "stepsTotal": 2,
+      "stepsPassed": 1,
+      "stepsFailed": 1,
+      "stepsSkipped": 0,
+      "replayDecisions": 0,
+      "authorDecisions": 2,
+      "uploadPerformed": true,
+      "uploadSucceeded": true,
+      "committed": false,
+      "cancelled": false
+    },
+    "steps": [
+      {
+        "index": 1,
+        "heading": "Open the login page",
+        "status": "passed",
+        "durationS": 25.3
+      },
+      {
+        "index": 2,
+        "heading": "Sign in with the demo account",
+        "status": "failed",
+        "durationS": 81.8
+      }
+    ],
+    "assertions": [
+      {
+        "detail": "the Login button is visible",
+        "passed": true
+      }
+    ],
+    "failure": {
+      "reason": "Login navigated to /products, but the page shows only Page not found instead of Products.",
+      "reasonCode": "assertion_error.confirmed_product_bug",
+      "resultCode": 740,
+      "summary": "The login flow sends a valid user to a Products address that the app does not serve.\nFix the post-login route or restore the Products page at /products, then rerun the login check.\nevidence: objective_contradiction: Login navigated to /products, but the page shows only Page not found instead of Products.",
+      "oneLiner": "After signing in with the requested account, the app opens /products but shows a Page not found screen rather than the Products page.",
+      "kaneVerdict": {
+        "rootCause": "The login flow sends a valid user to a Products address that the app does not serve.",
+        "suggestion": "Fix the post-login route or restore the Products page at /products, then rerun the login check.",
+        "confidence": 0.96,
+        "family": "application_issue",
+        "category": "navigation_defect",
+        "severity": "major"
+      }
+    },
+    "creditsConsumed": 23.3040325,
+    "malformedLineCount": 0
+  },
+  "eventsSummary": {
+    "total": 103,
+    "byType": {
+      "stream_start": 1,
+      "test_md_step_start": 2,
+      "bifurcation": 2,
+      "run_start": 2,
+      "step_start": 11,
+      "step_event": 54,
+      "step_end": 11,
+      "describe_trigger": 10,
+      "run_end": 2,
+      "test_md_step_end": 2,
+      "test_md_bug_verdict": 1,
+      "test_md_evidence_ingest": 1,
+      "test_md_bundle_sync": 1,
+      "test_md_summary": 1,
+      "coverage": 1,
+      "test_md_done": 1
+    }
+  },
+  "command": "kane-cli testmd run login_test.md --agent --headless",
+  "evidence": [
+    {
+      "id": "ab35141d-4298-496e-aa78-8575a4688628",
+      "kind": "EVIDENCE_PACK",
+      "label": "Kane evidence pack",
+      "source": "kane:kane_event",
+      "available": true,
+      "relativePath": "1bd8a628-1c27-40eb-be93-d0df043b0b7c/d1a34f61-b4fa-427b-a716-44a7fa1896a5.evidence",
+      "unavailableReason": null
+    }
+  ],
+  "output": {
+    "included": false,
+    "reason": "Raw output is only exported when requested."
+  }
+}

@@ -1,0 +1,163 @@
+{
+  "mode": "demo",
+  "startedAt": "2026-11-25T18:37:56.874Z",
+  "checks": [
+    {
+      "name": "server up",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "1280: criterion is Verified because of the newest passing run",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "1280: history lists the newest run first, and keeps the failure",
+      "ok": true,
+      "detail": "[\"Passed\",\"Failed\"]"
+    },
+    {
+      "name": "1280: report shows the failure, Kane's diagnosis and the criterion",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "1280: report has no username, data folder or account id",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "1280: panel labels Kane's diagnosis as Kane's",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "1280: nothing was copied before the button was pressed",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "1280: Copy report puts exactly the report on the clipboard",
+      "ok": true,
+      "detail": "10098 chars read back, 9981 in the report, 117 lines"
+    },
+    {
+      "name": "1280: Markdown download equals the report on screen",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "1280: JSON download is schemaVersion 1 with no raw output",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "1280: raw output is only in the explicit export",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "1280: evidence downloads as a file (zip signature)",
+      "ok": true,
+      "detail": "{\"status\":200,\"type\":\"application/octet-stream\",\"disp\":\"attachment; filename=\\\"d1a34f61-b4fa-427b-a716-44a7fa1896a5.evidence\\\"\",\"head\":[80,75],\"size\":219456}"
+    },
+    {
+      "name": "1280: comparison shows FAILED then PASSED",
+      "ok": true,
+      "detail": "[\"FAILED\",\"PASSED\"]"
+    },
+    {
+      "name": "1280: comparison states it infers no cause",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "1280: no horizontal scroll with report and comparison open",
+      "ok": true,
+      "detail": "{\"sw\":1280,\"iw\":1280}"
+    },
+    {
+      "name": "360: criterion is Verified because of the newest passing run",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "360: history lists the newest run first, and keeps the failure",
+      "ok": true,
+      "detail": "[\"Passed\",\"Failed\"]"
+    },
+    {
+      "name": "360: report shows the failure, Kane's diagnosis and the criterion",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "360: report has no username, data folder or account id",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "360: panel labels Kane's diagnosis as Kane's",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "360: nothing was copied before the button was pressed",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "360: Copy report puts exactly the report on the clipboard",
+      "ok": true,
+      "detail": "10098 chars read back, 9981 in the report, 117 lines"
+    },
+    {
+      "name": "360: Markdown download equals the report on screen",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "360: JSON download is schemaVersion 1 with no raw output",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "360: raw output is only in the explicit export",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "360: evidence downloads as a file (zip signature)",
+      "ok": true,
+      "detail": "{\"status\":200,\"type\":\"application/octet-stream\",\"disp\":\"attachment; filename=\\\"d1a34f61-b4fa-427b-a716-44a7fa1896a5.evidence\\\"\",\"head\":[80,75],\"size\":219456}"
+    },
+    {
+      "name": "360: comparison shows FAILED then PASSED",
+      "ok": true,
+      "detail": "[\"FAILED\",\"PASSED\"]"
+    },
+    {
+      "name": "360: comparison states it infers no cause",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "360: no horizontal scroll with report and comparison open",
+      "ok": true,
+      "detail": "{\"sw\":360,\"iw\":360}"
+    },
+    {
+      "name": "no uncaught page exceptions or console errors",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "errors": [],
+  "notes": [
+    "1280: copy outcome=copied; clipboard read ok=true",
+    "360: copy outcome=copied; clipboard read ok=true"
+  ],
+  "finishedAt": "2026-11-25T18:38:11.277Z",
+  "failed": 0
+}

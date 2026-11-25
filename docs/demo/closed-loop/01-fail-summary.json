@@ -1,0 +1,20 @@
+{
+  "phase": "fail",
+  "preflight": {
+    "loginOk": true,
+    "redirect": "/products",
+    "landedStatus": 404,
+    "works": false
+  },
+  "run": {
+    "id": "1bd8a628-1c27-40eb-be93-d0df043b0b7c",
+    "status": "FAILED",
+    "exitCode": 1,
+    "durationMs": 135165,
+    "errorCode": "EXIT_NONZERO",
+    "evidenceAvailable": true
+  },
+  "criterionStatus": "FAILED",
+  "kaneFinal": "failed",
+  "waitedSeconds": 136
+}

@@ -37,6 +37,12 @@ const API: Array<[string, string, string]> = [
   ["GET", "/api/v1/projects/:id/runs", "Run history, newest first, paginated."],
   ["GET", "/api/v1/runs/:runId", "Run detail, events and evidence."],
   ["POST", "/api/v1/runs/:runId/cancel", "Cancel the active run."],
+  ["GET", "/api/v1/runs/:runId/output?stream=", "Saved, redacted stdout or stderr."],
+  ["GET", "/api/v1/runs/:runId/report?format=", "Markdown or JSON report. includeOutput=true adds raw output to the JSON only."],
+  ["GET", "/api/v1/runs/:runId/evidence", "Evidence references, re-checked against the disk."],
+  ["GET", "/api/v1/runs/:runId/evidence/:evidenceId", "Download one verified evidence file."],
+  ["GET", "/api/v1/runs/compare?a=&b=", "Recorded differences between two runs of one criterion."],
+  ["GET / PUT", "/api/v1/projects/:id/test-files/:name", "Read or write a Kane test file in the managed folder."],
 ];
 
 export default function DocsPage() {

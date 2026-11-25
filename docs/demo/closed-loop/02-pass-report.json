@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "kind": "proofloop.run-report",
+  "run": {
+    "id": "70333158-c2c5-47c1-bf5c-82ac883e53d0",
+    "status": "PASSED",
+    "exitCode": 0,
+    "exitCodeReason": null,
+    "signal": null,
+    "timedOut": false,
+    "canceled": false,
+    "errorCode": null,
+    "summary": "Kane reported the test file passed and exited 0.",
+    "durationMs": 94420,
+    "createdAt": "2026-11-25T18:29:51.282Z",
+    "startedAt": "2026-11-25T18:29:51.286Z",
+    "finishedAt": "2026-11-25T18:31:25.707Z",
+    "stdoutTruncated": false,
+    "stderrTruncated": false
+  },
+  "project": {
+    "name": "Demo shop closed loop",
+    "targetUrl": "http://127.0.0.1:4100/"
+  },
+  "criterion": {
+    "id": "29c4868d-9c19-4021-9cf7-b81bbf72c104",
+    "title": "Login reaches the products page",
+    "expectedBehavior": "After signing in with the demo account, the browser shows the Products page with a product list and Add to cart buttons.",
+    "stepLabel": "Products page is shown",
+    "notes": null,
+    "testFile": "ac7859df-92cd-4712-83bc-cb0a957c7537/login_test.md"
+  },
+  "kane": {
+    "observed": true,
+    "reason": null,
+    "cliVersion": "0.10.9",
+    "finalStatus": "passed",
+    "finalStatusReason": null,
+    "summary": {
+      "overallStatus": "passed",
+      "durationS": 72,
+      "stepsTotal": 2,
+      "stepsPassed": 2,
+      "stepsFailed": 0,
+      "stepsSkipped": 0,
+      "replayDecisions": 1,
+      "authorDecisions": 1,
+      "uploadPerformed": true,
+      "uploadSucceeded": true,
+      "committed": true,
+      "cancelled": false
+    },
+    "steps": [
+      {
+        "index": 1,
+        "heading": "Open the login page",
+        "status": "passed",
+        "durationS": 3.41
+      },
+      {
+        "index": 2,
+        "heading": "Sign in with the demo account",
+        "status": "passed",
+        "durationS": 57.3
+      }
+    ],
+    "assertions": [
+      {
+        "detail": "the Login button is visible",
+        "passed": true
+      },
+      {
+        "detail": "the page shows the \"Products\" heading and at least one product with an \"Add to cart\" button.",
+        "passed": true
+      }
+    ],
+    "failure": null,
+    "creditsConsumed": 14.102357,
+    "malformedLineCount": 0
+  },
+  "eventsSummary": {
+    "total": 113,
+    "byType": {
+      "stream_start": 1,
+      "test_md_lock_state": 1,
+      "test_md_step_start": 2,
+      "run_start": 2,
+      "step_event": 61,
+      "step_start": 13,
+      "step_end": 13,
+      "run_end": 2,
+      "test_md_step_end": 2,
+      "bifurcation": 1,
+      "describe_trigger": 10,
+      "test_md_bundle_sync": 1,
+      "test_md_evidence_ingest": 1,
+      "test_md_summary": 1,
+      "coverage": 1,
+      "test_md_done": 1
+    }
+  },
+  "command": "kane-cli testmd run login_test.md --agent --headless",
+  "evidence": [
+    {
+      "id": "a6dffdb1-b84b-4e08-be38-422bb5e0956d",
+      "kind": "EVIDENCE_PACK",
+      "label": "Kane evidence pack",
+      "source": "kane:kane_event",
+      "available": true,
+      "relativePath": "70333158-c2c5-47c1-bf5c-82ac883e53d0/89b96c78-91eb-495f-9a2b-55b9e796491d.evidence",
+      "unavailableReason": null
+    }
+  ],
+  "output": {
+    "included": false,
+    "reason": "Raw output is only exported when requested."
+  }
+}

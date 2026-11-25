@@ -2,13 +2,19 @@
 
 Local-first app that connects acceptance criteria to Kane CLI browser verification. Specification documents are in `../proofloop/`.
 
-**Status: Phases 0 to 5 are built. Phase 5 (dashboard) is reported in `docs/phase5-report.md`.** Kane behavior was validated on kane-cli 0.10.9 (`docs/phase0-findings.md`). Projects, criteria and runs have a local SQLite store and a REST API under `/api/v1`. The dashboard at `/workspace` creates projects, writes Kane test files, maps criteria, starts real Kane runs and shows each run's recorded result. Agent handoff (Phase 6), comparison and exports (Phase 7) are not built.
+**Status: the planned feature set (phases 0 to 8) is built and tested, and the submission kit (phase 9) is prepared. Publishing, the demo video and the public posts are not done, because they need your accounts.** Kane behavior was validated on kane-cli 0.10.9 (`docs/phase0-findings.md`).
 
-Data lives in `PROOFLOOP_DATA_DIR` (default `./data`, gitignored). For real use, point it outside the repository. Reports: `docs/phase1-report.md`, `docs/phase2-report.md`, `docs/phase3-report.md`, `docs/phase4-report.md`, `docs/phase5-report.md`.
+What it does: projects and acceptance criteria live in a local SQLite store. You map each criterion to a Kane test file, start a real Kane run from the dashboard at `/workspace`, and see the recorded result, raw output and verified evidence. A criterion's status comes only from its newest run. From a finished run you can copy or download a factual Markdown report to give to your own coding agent (ProofLoop never contacts an agent), export JSON, compare two runs of a criterion, and keep the full history.
+
+What it does not do: call a coding agent, edit your code, run more than one Kane run at a time, or answer anything but loopback requests. Only one machine setup was tested (Windows, Node 26.12.1, kane-cli 0.10.9, Chrome). See "Limits" below and `docs/phase9-report.md`.
+
+Closed-loop demo with real Kane runs (planted bug, failure, report, fix, pass): `demo/README.md`.
+
+Data lives in `PROOFLOOP_DATA_DIR` (default `./data`, gitignored). For real use, point it outside the repository. Per-phase reports: `docs/phase1-report.md` to `docs/phase9-report.md`; Phase 9 also has `docs/phase9-submission-kit.md`.
 
 Tests: `npm test` runs application, parser-fixture, fake-process and jsdom component tests (no Kane, no credits). `node scripts/ui-e2e.mjs layout` checks the dashboard at 360 px and by keyboard in headless Chrome without starting Kane. `node scripts/ui-e2e.mjs live` drives the whole dashboard and starts one REAL Kane run (uses credits, uploads to Test Manager); it needs the production build and port 3100 free. `npm run test:live-kane` runs the real Kane CLI through the adapter. It needs an authenticated `kane-cli` 0.10.9, Chrome and credits, uploads each run to your TestMu Test Manager, and is never part of `npm test`.
 
-API (local only): `GET/POST /api/v1/projects`, `GET/PATCH/DELETE /api/v1/projects/:id` (DELETE archives), `POST /api/v1/projects/:id/criteria`, `PATCH/DELETE /api/v1/projects/:id/criteria/:criterionId`, `GET /api/v1/health`. Runs: `POST /api/v1/projects/:id/criteria/:criterionId/runs` (body `{}`, returns `202` and polls), `GET /api/v1/runs/:runId`, `GET /api/v1/projects/:id/runs`, `POST /api/v1/runs/:runId/cancel`, `GET /api/v1/runs/:runId/output?stream=stdout|stderr`. Test files (used by the dashboard editor): `GET /api/v1/projects/:id/test-files`, `GET|PUT /api/v1/projects/:id/test-files/:name`. The report and evidence endpoints are not implemented yet.
+API (local only): `GET/POST /api/v1/projects`, `GET/PATCH/DELETE /api/v1/projects/:id` (DELETE archives), `POST /api/v1/projects/:id/criteria`, `PATCH/DELETE /api/v1/projects/:id/criteria/:criterionId`, `GET /api/v1/health`. Runs: `POST /api/v1/projects/:id/criteria/:criterionId/runs` (body `{}`, returns `202` and polls), `GET /api/v1/runs/:runId`, `GET /api/v1/projects/:id/runs`, `POST /api/v1/runs/:runId/cancel`, `GET /api/v1/runs/:runId/output?stream=stdout|stderr`. Reports and history: `GET /api/v1/runs/:runId/report?format=markdown|json[&includeOutput=true]`, `GET /api/v1/runs/:runId/evidence`, `GET /api/v1/runs/:runId/evidence/:evidenceId` (local file download), `GET /api/v1/runs/compare?a=:runId&b=:runId`. Test files (used by the dashboard editor): `GET /api/v1/projects/:id/test-files`, `GET|PUT /api/v1/projects/:id/test-files/:name`. Full contract: `../proofloop/api-spec.md`.
 
 A criterion is `VERIFIED` only when its newest run passed in real Kane and its test file, mapping and expected behavior are unchanged since. Put test files under `<PROOFLOOP_TESTS_DIR>/<project-id>/<name>_test.md`.
 
@@ -52,6 +58,22 @@ Visual QA: `node scripts/shoot.mjs <url> <outDir> <label> 1440x900 0,1,2` takes 
 - `src/server/{domain,storage,kane,reports,security}`: server-only modules, each marked `server-only`.
 - `src/server/config.ts`: validated configuration (loopback host required).
 - `tests/`: application tests. These are ProofLoop tests, not Kane verification.
+
+## Security boundary
+
+- Loopback only. The npm scripts bind `127.0.0.1`, and a request-level guard (`proxy.ts`) answers `403` to any request whose `Host` is not `127.0.0.1`, `localhost` or `[::1]`, which blocks DNS-rebinding from other web pages. Cross-origin writes get `403`. Bodies are limited to 64 KiB and must be JSON.
+- Kane runs without a shell, with an allow-listed environment, in a per-run folder. Output is redacted (known secret values, your home folder, Test Manager share tokens, bearer tokens, credential flags) before it is stored, and again when a report is built. Reports and exports never contain the data folder path, environment values, or absolute command paths.
+- Reports carry only the last 25 lines of each stream. Full stdout and stderr are in the JSON export only when you ask for it with `includeOutput=true`.
+- Test files are trusted code: Kane runs what they say. The Node child process is not a sandbox. Do not run ProofLoop for other people or against targets you are not allowed to test.
+- Checks: `node scripts/network-check.mjs` (host guard, CSRF, headers, not reachable on this machine's LAN address), `node scripts/clean-install-check.mjs` (clone, `npm ci`, lint, typecheck, tests, build from committed files only).
+
+## Limits
+
+- One Kane run at a time. One machine setup tested (Windows, Node 26.12.1, kane-cli 0.10.9, Chrome). No Linux or macOS run, no screen-reader test.
+- A Kane run uses credits and is uploaded to your TestMu Test Manager. ProofLoop does not estimate cost. It overlaps with the Test Manager dashboard; what it adds is criteria to evidence to handoff, kept locally.
+- `Verified` means the newest real Kane run of that test passed and the test, mapping and expected behavior are unchanged since. It says nothing about the rest of the app.
+- Evidence is a Kane `.evidence` pack that ProofLoop confirms exists and downloads on request. It does not open, validate or interpret the pack.
+- Output saved per stream is capped (10 MiB by default); a cut stream is marked.
 
 ## Pinned versions
 

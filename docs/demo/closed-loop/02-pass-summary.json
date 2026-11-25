@@ -1,0 +1,27 @@
+{
+  "phase": "pass",
+  "preflight": {
+    "loginOk": true,
+    "redirect": "/inventory",
+    "landedStatus": 200,
+    "works": true
+  },
+  "run": {
+    "id": "70333158-c2c5-47c1-bf5c-82ac883e53d0",
+    "status": "PASSED",
+    "exitCode": 0,
+    "durationMs": 94420,
+    "errorCode": null,
+    "evidenceAvailable": true
+  },
+  "criterionStatus": "VERIFIED",
+  "kaneFinal": "passed",
+  "waitedSeconds": 97,
+  "firstRun": {
+    "phase": "fail",
+    "runId": "1bd8a628-1c27-40eb-be93-d0df043b0b7c",
+    "status": "FAILED",
+    "exitCode": 1,
+    "durationMs": 135165
+  }
+}

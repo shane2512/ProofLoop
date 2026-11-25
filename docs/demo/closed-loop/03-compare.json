@@ -1,0 +1,109 @@
+{
+  "a": {
+    "id": "1bd8a628-1c27-40eb-be93-d0df043b0b7c",
+    "status": "FAILED",
+    "exitCode": 1,
+    "timedOut": false,
+    "canceled": false,
+    "errorCode": "EXIT_NONZERO",
+    "summary": "Kane reported the test file failed (exit 1).",
+    "createdAt": "2026-11-25T18:22:35.778Z",
+    "startedAt": "2026-11-25T18:22:35.782Z",
+    "finishedAt": "2026-11-25T18:24:50.946Z",
+    "durationMs": 135165,
+    "kaneFinalStatus": "failed",
+    "stepsPassed": 1,
+    "stepsFailed": 1,
+    "expectedBehavior": "After signing in with the demo account, the browser shows the Products page with a product list and Add to cart buttons.",
+    "testFile": "ac7859df-92cd-4712-83bc-cb0a957c7537/login_test.md",
+    "evidence": [
+      {
+        "id": "ab35141d-4298-496e-aa78-8575a4688628",
+        "label": "Kane evidence pack",
+        "available": true,
+        "relativePath": "1bd8a628-1c27-40eb-be93-d0df043b0b7c/d1a34f61-b4fa-427b-a716-44a7fa1896a5.evidence",
+        "unavailableReason": null
+      }
+    ]
+  },
+  "b": {
+    "id": "70333158-c2c5-47c1-bf5c-82ac883e53d0",
+    "status": "PASSED",
+    "exitCode": 0,
+    "timedOut": false,
+    "canceled": false,
+    "errorCode": null,
+    "summary": "Kane reported the test file passed and exited 0.",
+    "createdAt": "2026-11-25T18:29:51.282Z",
+    "startedAt": "2026-11-25T18:29:51.286Z",
+    "finishedAt": "2026-11-25T18:31:25.707Z",
+    "durationMs": 94420,
+    "kaneFinalStatus": "passed",
+    "stepsPassed": 2,
+    "stepsFailed": 0,
+    "expectedBehavior": "After signing in with the demo account, the browser shows the Products page with a product list and Add to cart buttons.",
+    "testFile": "ac7859df-92cd-4712-83bc-cb0a957c7537/login_test.md",
+    "evidence": [
+      {
+        "id": "a6dffdb1-b84b-4e08-be38-422bb5e0956d",
+        "label": "Kane evidence pack",
+        "available": true,
+        "relativePath": "70333158-c2c5-47c1-bf5c-82ac883e53d0/89b96c78-91eb-495f-9a2b-55b9e796491d.evidence",
+        "unavailableReason": null
+      }
+    ]
+  },
+  "differences": [
+    {
+      "field": "status",
+      "a": "FAILED",
+      "b": "PASSED"
+    },
+    {
+      "field": "exitCode",
+      "a": 1,
+      "b": 0
+    },
+    {
+      "field": "errorCode",
+      "a": "EXIT_NONZERO",
+      "b": null
+    },
+    {
+      "field": "summary",
+      "a": "Kane reported the test file failed (exit 1).",
+      "b": "Kane reported the test file passed and exited 0."
+    },
+    {
+      "field": "startedAt",
+      "a": "2026-11-25T18:22:35.782Z",
+      "b": "2026-11-25T18:29:51.286Z"
+    },
+    {
+      "field": "finishedAt",
+      "a": "2026-11-25T18:24:50.946Z",
+      "b": "2026-11-25T18:31:25.707Z"
+    },
+    {
+      "field": "durationMs",
+      "a": 135165,
+      "b": 94420
+    },
+    {
+      "field": "kaneFinalStatus",
+      "a": "failed",
+      "b": "passed"
+    },
+    {
+      "field": "stepsPassed",
+      "a": 1,
+      "b": 2
+    },
+    {
+      "field": "stepsFailed",
+      "a": 1,
+      "b": 0
+    }
+  ],
+  "note": "These are the recorded differences between two runs. ProofLoop does not infer what caused them."
+}

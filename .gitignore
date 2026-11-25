@@ -33,6 +33,9 @@ docs/phase0-raw/
 vids/
 docs/*.log
 
+# Vercel project link
+.vercel/
+
 # logs and coverage
 *.log
 coverage/

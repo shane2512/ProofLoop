@@ -67,6 +67,10 @@ Visual QA: `node scripts/shoot.mjs <url> <outDir> <label> 1440x900 0,1,2` takes 
 - Test files are trusted code: Kane runs what they say. The Node child process is not a sandbox. Do not run ProofLoop for other people or against targets you are not allowed to test.
 - Checks: `node scripts/network-check.mjs` (host guard, CSRF, headers, not reachable on this machine's LAN address), `node scripts/clean-install-check.mjs` (clone, `npm ci`, lint, typecheck, tests, build from committed files only).
 
+## Hosted showcase (not the app)
+
+The app needs your machine: Kane, Chrome and a local data folder. A hosted copy can only show the marketing pages. Setting `PROOFLOOP_PUBLIC_SITE=1` (done on the Vercel project) switches `proxy.ts` to a read-only mode: GET and HEAD for `/`, `/workflow`, `/evidence`, `/faq` and `/docs` are served, `/workspace` redirects to `/docs`, and the whole API and every other path return 404. No project, run or file can be created there, and no Kane process can start. Without that variable the app answers loopback requests only. The policy is in `src/server/security/request-policy.ts` and tested in `tests/request-policy.test.ts`.
+
 ## Limits
 
 - One Kane run at a time. One machine setup tested (Windows, Node 26.12.1, kane-cli 0.10.9, Chrome). No Linux or macOS run, no screen-reader test.

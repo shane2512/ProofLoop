@@ -29,6 +29,10 @@ const FAQS: Array<{ q: string; a: string }> = [
     a: "Yes. Runs use your Kane login and credits. In our validation, authoring a two-step test for the first time cost about 35 credits; cached replays reported none. Your costs may differ.",
   },
   {
+    q: "I don't know how to write a test. Where do I start?",
+    a: "Open the How to write a test page (/test-examples). It shows the three parts of a test file, the rules that matter, and examples you can copy. The ones marked as run were run through the real Kane CLI; the others are marked as not run by us. In the workspace, the test editor opens with a starter that already has your site's address filled in.",
+  },
+  {
     q: "Can it turn my plain-English criteria into tests?",
     a: "No. You write the _test.md file and map it to the criterion. Generated tests would make a pass mean something you never reviewed.",
   },

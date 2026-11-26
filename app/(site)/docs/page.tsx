@@ -96,20 +96,30 @@ export default function DocsPage() {
                 <span className="dot">04</span>Test files
               </h2>
               <p>
-                Put each test at <code>&lt;PROOFLOOP_TESTS_DIR&gt;/&lt;project-id&gt;/&lt;name&gt;_test.md</code> and map one criterion to it. A minimal file:
+                The easiest way is the test editor in the workspace (Add criterion, then Write a new test file): you type a name and the text, and ProofLoop saves it as <code>&lt;name&gt;_test.md</code> in the project&rsquo;s own folder, <code>&lt;PROOFLOOP_TESTS_DIR&gt;/&lt;project-id&gt;/</code>. Map one criterion to each file. This example ran through the real Kane CLI and passed:
               </p>
               <CopyCode
+                prompt={false}
                 lines={[
-                  "# login_test.md",
                   "---",
                   "mode: testing",
                   "url: https://www.saucedemo.com/",
+                  "max_steps: 20",
                   "---",
-                  "## Sign in",
-                  'Type "standard_user" and "secret_sauce", click Login.',
-                  'Verify the page shows the "Products" heading.',
+                  "",
+                  "# Smoke: login reaches inventory (expected to PASS)",
+                  "",
+                  "## Open the login page",
+                  "Open https://www.saucedemo.com/ and verify the Login button is visible.",
+                  "",
+                  "## Sign in with the public demo account",
+                  'Type "standard_user" into the Username field and "secret_sauce" into the Password field, then click Login.',
+                  'Verify the page shows the "Products" heading and at least one product with an "Add to cart" button.',
                 ]}
               />
+              <p>
+                <strong>Don&rsquo;t know how to write a test script?</strong> <a href="/test-examples">Click here for the format, the rules that matter and more examples you can copy</a>, including a failing one, a wrong-password check and a test for an app on your own computer.
+              </p>
               <p>Editing a test after it passed makes the criterion UNVERIFIED until it passes again.</p>
             </section>
 

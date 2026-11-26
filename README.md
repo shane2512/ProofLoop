@@ -44,6 +44,8 @@ The app now opens on a marketing site that explains the product honestly (unbuil
 | `/evidence` | What each run records, the six run outcomes, criterion statuses |
 | `/faq` | Plain answers, including limits and the TestMu dashboard overlap |
 | `/docs` | Setup, Kane connection, test file location, configuration, local API |
+| `/run-locally` | Step-by-step: install and log in to Kane, clone, build, start, first run, troubleshooting (shown at `/workspace` on the hosted site) |
+| `/test-examples` | How to write a Kane test: the format, the rules, and copyable examples, each labelled as run with real Kane or not run by us. Linked from the workspace, the criterion form, the test editor and the docs |
 | `/workspace` | The dashboard: project list and creation, with the live server readout |
 | `/workspace/projects/:id` | One project: criteria, test file editor, run confirmation, live run panel, run history |
 

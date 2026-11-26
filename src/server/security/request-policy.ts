@@ -10,7 +10,7 @@ import { isLoopbackHostHeader } from "./host";
  * pages are served. The workspace shows the "run it on your machine" steps, and the API and everything else is refused. The
  * Host header is not checked in this mode because the site is meant to be reached by its public name.
  */
-export const PUBLIC_PAGES: ReadonlySet<string> = new Set(["/", "/workflow", "/evidence", "/faq", "/docs", "/run-locally"]);
+export const PUBLIC_PAGES: ReadonlySet<string> = new Set(["/", "/workflow", "/evidence", "/faq", "/docs", "/run-locally", "/test-examples"]);
 
 /** Where the hosted copy sends visitors who open the workspace, which only exists on their own machine. */
 export const WORKSPACE_STAND_IN = "/run-locally";

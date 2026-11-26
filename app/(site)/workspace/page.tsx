@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { ProjectList } from "@/components/workspace/ProjectList";
 import { WorkspaceShell } from "@/components/workspace/WorkspaceShell";
 import { loadConfig } from "@/server/config";
@@ -36,6 +37,9 @@ export default function WorkspacePage() {
             <dd>{config.kaneCliPath ? "Set by KANE_CLI_PATH" : "Auto-detected"}</dd>
           </div>
         </dl>
+        <p className="ws-help">
+          Don&apos;t know how to write a test script? <Link href="/test-examples">Click here for the format and examples you can copy</Link>.
+        </p>
       </header>
       <ProjectList />
     </WorkspaceShell>

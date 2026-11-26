@@ -83,6 +83,13 @@ export function TestFileEditor({ projectId, targetUrl, existingName, mappedCrite
       <p className="ws-note">
         Kane runs this file as written, on this machine. ProofLoop saves it as <code>{name.trim() || "name"}_test.md</code> in this project&apos;s test folder.
       </p>
+      <p className="ws-help">
+        Don&apos;t know how to write a test script?{" "}
+        <a href="/test-examples" target="_blank" rel="noopener noreferrer">
+          Click here for the format and examples you can copy
+        </a>{" "}
+        (opens in a new tab, so your work here is kept).
+      </p>
       {existingName && mappedCriteria > 0 ? (
         <p className="ws-note ws-note-warn">
           {mappedCriteria === 1 ? "A criterion uses" : `${mappedCriteria} criteria use`} this file. Saving changes means any earlier passing run of{" "}

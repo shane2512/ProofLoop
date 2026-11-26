@@ -147,7 +147,9 @@ export default function RunLocallyPage() {
                   In the workspace, create a project with a name and the site&rsquo;s URL, for example <code>https://www.saucedemo.com/</code>.
                 </li>
                 <li>Choose Add criterion. Write one sentence a person could check, and what must be true when it passes.</li>
-                <li>Choose Write a new test file, keep the starter text or adjust it, and save. ProofLoop stores it in its own folder for you.</li>
+                <li>
+                  Choose Write a new test file, keep the starter text or adjust it, and save. ProofLoop stores it in its own folder for you. Not sure what to write? <Link href="/test-examples">See how to write a test</Link>, with examples you can copy.
+                </li>
                 <li>Save the criterion, then choose Run with Kane and confirm. It is a real run and uses credits.</li>
                 <li>
                   Wait for the result. A new test&rsquo;s first run is authored by Kane and can take two to four minutes. The status stays Running until Kane finishes, and nothing counts as passed before then.

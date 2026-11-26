@@ -70,7 +70,9 @@ for (const stop of stops.split(",")) {
   fs.writeFileSync(path.join(outDir, `${label}-${stop}.png`), Buffer.from(shot.result.data, "base64"));
 }
 
-console.log(JSON.stringify({ label, docHeight, errors }));
+// Horizontal overflow: the page is wider than the window when scrollWidth exceeds innerWidth.
+const widths = (await send("Runtime.evaluate", { expression: "({ scrollWidth: document.documentElement.scrollWidth, innerWidth: window.innerWidth })", returnByValue: true })).result.result.value;
+console.log(JSON.stringify({ label, docHeight, ...widths, overflowsHorizontally: widths.scrollWidth > widths.innerWidth, errors }));
 ws.close();
 proc.kill();
 await sleep(300);

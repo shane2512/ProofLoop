@@ -109,6 +109,13 @@ export function CriterionForm({ project, criteria, criterion, onSaved, onCancel 
       </Field>
       {files.error ? <ErrorNotice error={files.error} onRetry={files.reload} /> : null}
       {files.data && options.length === 0 ? <p className="ws-note">This project has no test files yet. Write one to continue.</p> : null}
+      <p className="ws-help">
+        Don&apos;t know how to write a test script?{" "}
+        <a href="/test-examples" target="_blank" rel="noopener noreferrer">
+          Click here for examples
+        </a>
+        .
+      </p>
       <div className="ws-actions ws-actions-tight">
         <button type="button" className="ws-btn ws-btn-ghost" onClick={() => setView({ kind: "file" })}>
           Write a new test file

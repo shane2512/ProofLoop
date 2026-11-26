@@ -161,6 +161,9 @@ export function ProjectView({ projectId }: { projectId: string }) {
           <div className="ws-empty">
             <p className="ws-empty-title">Nothing to verify yet.</p>
             <p>Each criterion pairs what should be true with a Kane test file that checks it. Nothing counts as verified until Kane runs that test and passes.</p>
+            <p className="ws-help">
+              Don&apos;t know how to write a test script? <Link href="/test-examples">Click here for the format and examples you can copy</Link>.
+            </p>
           </div>
         ) : (
           <ul className="ws-criteria">

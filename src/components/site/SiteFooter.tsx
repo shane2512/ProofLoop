@@ -53,6 +53,7 @@ export function SiteFooter() {
             <h3>Product</h3>
             <Link href={WORKSPACE_LINK.href}>Workspace</Link>
             <Link href="/docs#api">Local API</Link>
+            <Link href="/test-examples">How to write a test</Link>
             <Link href="/evidence#outcomes">Run outcomes</Link>
             <Link href="/workflow#status">Build status</Link>
           </div>

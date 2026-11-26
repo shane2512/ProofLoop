@@ -1239,6 +1239,10 @@ html.has-motion:not(.motion-ready) [data-intro] {
   color: var(--ink);
 }
 
+.docs-body {
+  min-width: 0;
+}
+
 .docs-body section {
   padding-bottom: 56px;
   margin-bottom: 56px;
@@ -1668,7 +1672,18 @@ html.has-motion:not(.motion-ready) [data-intro] {
   }
 
   .docs {
-    grid-template-columns: 1fr;
+    /* minmax(0, 1fr): a plain 1fr lets the widest code line stretch the whole column past the screen. */
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .docs-body .table {
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  .docs-body .table th,
+  .docs-body .table td {
+    overflow-wrap: anywhere;
   }
 
   .docs-toc {
@@ -2706,4 +2721,56 @@ html.has-motion:not(.motion-ready) [data-intro] {
     margin: 0 -6px;
     padding: 10px 6px;
   }
+}
+
+/* ----- "Don't know how to write a test?" help line and the examples page ----- */
+
+.ws-help {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border-left: 2px solid var(--accent);
+  background: rgba(255, 79, 23, 0.06);
+  border-radius: 0 7px 7px 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #d4d4d8;
+  max-width: 76ch;
+  overflow-wrap: anywhere;
+}
+
+.ws-help a {
+  color: var(--white);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ws-help a:hover {
+  color: var(--accent);
+}
+
+.ws-empty .ws-help {
+  margin-top: 12px;
+}
+
+.ws-form > .ws-help {
+  margin-top: 0;
+}
+
+.example {
+  margin: 28px 0 0;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+
+.example h3 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  margin: 0 0 8px;
+}
+
+.example-use {
+  margin-top: 10px;
 }

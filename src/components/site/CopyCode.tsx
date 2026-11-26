@@ -5,7 +5,7 @@ import { useRef, useState } from "react";
 type State = "idle" | "copied" | "error";
 
 /** Code block with a copy button that reports success or failure (no silent failures). */
-export function CopyCode({ lines }: { lines: string[] }) {
+export function CopyCode({ lines, prompt = true }: { lines: string[]; /** Show "> " before each line. Turn off for file contents, which are not commands. */ prompt?: boolean }) {
   const [state, setState] = useState<State>("idle");
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const text = lines.join("\n");
@@ -27,7 +27,7 @@ export function CopyCode({ lines }: { lines: string[] }) {
         <code>
           {lines.map((line, i) => (
             <span key={i}>
-              <span className="prompt">{line.startsWith("#") ? "" : "> "}</span>
+              <span className="prompt">{!prompt || line.startsWith("#") ? "" : "> "}</span>
               {line}
               {"\n"}
             </span>
